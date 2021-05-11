@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+The MIT License
+
+Copyright 2021 Daniel Beck
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+-->
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout" xmlns:f="/lib/form">
+    <l:layout title="${it.displayName}">
+        <l:side-panel>
+            <l:tasks>
+                <l:task icon="icon-up icon-md" href="${rootURL}" title="${%Back to Dashboard}"/>
+                <l:task icon="icon-gear2 icon-md" href="${rootURL}" title="${%Manage Jenkins}"/>
+            </l:tasks>
+        </l:side-panel>
+        <l:main-panel>
+            <h1>${%Content-Security-Policy Report}</h1>
+            <p>
+                ${%blurb}
+            </p>
+            <p>
+                ${%configure(rootURL)}
+            </p>
+            <table class="sortable pane bigtable">
+                <tr>
+                    <th>${%Date}</th>
+                    <th>${%Affected User}</th>
+                    <th>${%Context Class}</th>
+                    <th>${%Context View}</th>
+                    <th>${%Violated Directive}</th>
+                    <th>${%Blocked URI}</th>
+                    <th>${%Sample}</th>
+                </tr>
+                <j:forEach items="${it.records}" var="record">
+                    <tr>
+                        <td>${record.time}</td>
+                        <td>
+                            <j:set var="user" value="${record.user}"/>
+                            <j:choose>
+                                <j:when test="${user == null}">
+                                    <em>(anonymous)</em>
+                                </j:when>
+                                <j:otherwise>
+                                    <a href="${rootURL}/${user.url}" class="model-link inside">
+                                        ${user.displayName}
+                                    </a>
+                                </j:otherwise>
+                            </j:choose>
+                        </td>
+                        <td>
+                            <j:set var="plugin" value="${record.contextPlugin}"/>
+                            <j:choose>
+                                <j:when test="${plugin == null}">
+                                    ${%contextWithoutPlugin(record.contextClassName)}
+                                </j:when>
+                                <j:otherwise>
+                                    ${%contextWithPlugin(record.contextClassName, plugin.url, plugin.displayName)}
+                                </j:otherwise>
+                            </j:choose>
+                        </td>
+                        <td>${record.contextViewName}</td>
+                        <td>${record.violatedDirective}</td>
+                        <td>${record.blockedUri}</td>
+                        <td>
+                            <code><pre>${record.scriptSample}</pre></code>
+                        </td>
+                    </tr>
+                </j:forEach>
+            </table>
+            <p>
+                <f:form action="clear" method="post">
+                    <f:submit value="${%Clear}"/>
+                </f:form>
+            </p>
+        </l:main-panel>
+    </l:layout>
+</j:jelly>
