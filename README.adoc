@@ -1,0 +1,29 @@
+= Content Security Policy Plugin
+
+WARNING: Jenkins is currently (version 2.293) not ready for this plugin to be used to enforce Content-Security-Policy for most resources in production environments.
+Many features, both in core and plugins, will stop working with the default rule set.
+At this time, this plugin is a utility for Jenkins developers, not for Jenkins administrators.
+
+== Introduction
+
+This plugin implements Content-Security-Policy protection for the classic Jenkins UI.
+
+== Getting started
+
+Install this plugin to have basic reporting of Content-Security-Policy violations in Jenkins:
+A new link _Content Security Policy Reports_ on the _Manage Jenkins_ page allows administrators to review identified policy violations.
+
+Rules can be configured in the _Global Security Policy_ configuration screen.
+
+== Issues
+
+Report issues and enhancements in the https://www.jenkins.io/participate/report-issue/redirect/#28623[Jenkins issue tracker].
+
+== Contributing
+
+Refer to our https://github.com/jenkinsci/.github/blob/master/CONTRIBUTING.md[contribution guidelines].
+
+== LICENSE
+
+Licensed under MIT, see link:LICENSE.md[LICENSE].
+
