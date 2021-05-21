@@ -58,6 +58,7 @@ import java.util.logging.Logger;
 @Restricted(NoExternalUse.class)
 @Symbol("contentSecurityPolicyRootAction")
 public class ContentSecurityPolicyRootAction extends InvisibleAction implements RootAction {
+    // TODO Should this be an UnprotectedRootAction, or the header only set for users with Overall/Read? Should this be an admin option?
 
     public static final String URL = "content-security-policy-reporting-endpoint";
     public static final Logger LOGGER = Logger.getLogger(ContentSecurityPolicyRootAction.class.getName());
