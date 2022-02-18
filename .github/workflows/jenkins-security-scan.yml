@@ -9,7 +9,7 @@ on:
 
 jobs:
   security-scan:
-    uses: jenkins-infra/jenkins-security-scan/.github/workflows/jenkins-security-scan.yaml@main
+    uses: jenkins-infra/jenkins-security-scan/.github/workflows/jenkins-security-scan.yaml@v1
     with:
       java-cache: maven
       java-version: 8
