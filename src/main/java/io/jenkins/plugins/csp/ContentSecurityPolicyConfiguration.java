@@ -25,6 +25,7 @@ package io.jenkins.plugins.csp;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
+import hudson.model.PersistentDescriptor;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.GlobalConfigurationCategory;
 import org.jenkinsci.Symbol;
@@ -38,7 +39,7 @@ import org.kohsuke.stapler.DataBoundSetter;
 @Extension
 @Restricted(NoExternalUse.class)
 @Symbol("contentSecurityPolicyConfiguration")
-public class ContentSecurityPolicyConfiguration extends GlobalConfiguration {
+public class ContentSecurityPolicyConfiguration extends GlobalConfiguration implements PersistentDescriptor {
 
     public static final String DEFAULT_RULE = "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'report-sample' usage.jenkins.io;";
             // Hashes for known static core scripts could be added to limit spam:
