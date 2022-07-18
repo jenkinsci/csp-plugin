@@ -11,9 +11,9 @@ This plugin implements Content-Security-Policy protection for the classic Jenkin
 == Getting started
 
 Install this plugin to have basic reporting of Content-Security-Policy violations in Jenkins:
-A new link _Content Security Policy Reports_ on the _Manage Jenkins_ page allows administrators to review identified policy violations.
+A new link _Content Security Policy Reports_ on the _Manage Jenkins_ page allows administrators to review reported policy violations.
 
-Rules can be configured in the _Global Security Policy_ configuration screen.
+Rules can be configured on the _Configure Global Security_ configuration screen.
 
 == Issues
 
