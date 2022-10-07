@@ -27,8 +27,8 @@ THE SOFTWARE.
     <l:layout title="${it.displayName}">
         <l:side-panel>
             <l:tasks>
-                <l:task icon="icon-up icon-md" href="${rootURL}" title="${%Back to Dashboard}"/>
-                <l:task icon="icon-gear2 icon-md" href="${rootURL}" title="${%Manage Jenkins}"/>
+                <l:task icon="icon-up icon-md" href="${rootURL}/" title="${%Back to Dashboard}"/>
+                <l:task icon="icon-gear2 icon-md" href="${rootURL}/manage" title="${%Manage Jenkins}"/>
             </l:tasks>
         </l:side-panel>
         <l:main-panel>
