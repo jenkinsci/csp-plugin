@@ -97,12 +97,12 @@ public class ContentSecurityPolicyManagementLink extends ManagementLink implemen
     }
 
     @Override
-    public void report(@NonNull Context context, @CheckForNull User user, @NonNull JSONObject report) {
+    public void report(@NonNull ViewContext viewContext, @CheckForNull User user, @NonNull JSONObject report) {
         final JSONObject cspReport = report.getJSONObject("csp-report");
         final String violatedDirective = cspReport.optString("violated-directive", "<UNKNOWN>");
         final String blockedUri = cspReport.optString("blocked-uri", "<UNKNOWN>");
         final String scriptSample = cspReport.optString("script-sample", "<UNKNOWN>");
-        Record record = new Record(context.getClassName(), context.getViewName(), violatedDirective, blockedUri, scriptSample, Instant.now(), user == null ? null : user.getId());
+        Record record = new Record(viewContext.getClassName(), viewContext.getViewName(), violatedDirective, blockedUri, scriptSample, Instant.now(), user == null ? null : user.getId());
         synchronized (records) {
             records.add(record);
         }

@@ -38,13 +38,13 @@ import java.util.Objects;
  */
 @Restricted(NoExternalUse.class)
 public interface ContentSecurityPolicyReceiver extends ExtensionPoint {
-    void report(@NonNull Context context, @CheckForNull User user, @NonNull JSONObject report);
+    void report(@NonNull ViewContext viewContext, @CheckForNull User user, @NonNull JSONObject report);
 
-    class Context {
+    class ViewContext {
         private final String className;
         private final String viewName;
 
-        public Context(@NonNull String className, @NonNull String viewName) {
+        public ViewContext(@NonNull String className, @NonNull String viewName) {
             this.className = Objects.requireNonNull(className, "className");
             this.viewName = Objects.requireNonNull(viewName, "viewName");
         }
@@ -71,8 +71,8 @@ public interface ContentSecurityPolicyReceiver extends ExtensionPoint {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            Context context = (Context) o;
-            return className.equals(context.className) && viewName.equals(context.viewName);
+            ViewContext viewContext = (ViewContext) o;
+            return className.equals(viewContext.className) && viewName.equals(viewContext.viewName);
         }
 
         @Override

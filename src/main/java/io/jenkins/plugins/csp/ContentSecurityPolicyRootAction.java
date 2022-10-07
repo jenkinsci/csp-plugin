@@ -26,7 +26,7 @@ package io.jenkins.plugins.csp;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.model.InvisibleAction;
-import hudson.model.RootAction;
+import hudson.model.UnprotectedRootAction;
 import hudson.model.User;
 import hudson.security.csrf.CrumbExclusion;
 import hudson.util.HttpResponses;
@@ -53,12 +53,14 @@ import java.util.logging.Logger;
  * {@link StaplerRequest#getRestOfPath()} is used to associate violations with
  * the view they occur in; {@link ContentSecurityPolicyDecorator} needs to have a dynamic report
  * URL for that.
+ * <p>
+ * While this is an {@link hudson.model.UnprotectedRootAction}, only submissions with correct HMAC
+ * from {@link Context#encodeContext(Object, hudson.model.User, String)} will be accepted.
  */
 @Extension
 @Restricted(NoExternalUse.class)
 @Symbol("contentSecurityPolicyRootAction")
-public class ContentSecurityPolicyRootAction extends InvisibleAction implements RootAction {
-    // TODO Should this be an UnprotectedRootAction, or the header only set for users with Overall/Read? Should this be an admin option?
+public class ContentSecurityPolicyRootAction extends InvisibleAction implements UnprotectedRootAction {
 
     public static final String URL = "content-security-policy-reporting-endpoint";
     public static final Logger LOGGER = Logger.getLogger(ContentSecurityPolicyRootAction.class.getName());
@@ -69,31 +71,32 @@ public class ContentSecurityPolicyRootAction extends InvisibleAction implements 
     }
 
     public HttpResponse doDynamic(StaplerRequest req) {
-        User current = User.current();
-
         String restOfPath = StringUtils.removeStart(req.getRestOfPath(), "/");
-        int splitIdx = restOfPath.indexOf(':');
-        if (splitIdx == -1) {
-            /* unexpected parameter */
-            LOGGER.log(Level.FINE, "Unexpected rest of path: " + restOfPath);
+
+        try {
+            final Context.DecodedContext context = Context.decodeContext(restOfPath);
+
+            ContentSecurityPolicyReceiver.ViewContext viewContext = new ContentSecurityPolicyReceiver.ViewContext(context.contextClassName, context.restOfPath);
+            try (Reader reader = req.getReader()) {
+                String report = IOUtils.toString(reader); // TODO Limit max length to 1MB or so even though at this point we know the user is legitimate
+                LOGGER.log(Level.FINE, () -> viewContext + " " + report);
+                final JSONObject jsonObject = JSONObject.fromObject(report);
+                for (ContentSecurityPolicyReceiver receiver : ExtensionList.lookup(ContentSecurityPolicyReceiver.class)) {
+                    try {
+                        final User user = context.userId == null ? null : User.getById(context.userId, false);
+                        receiver.report(viewContext, user, jsonObject);
+                    } catch (Exception ex) {
+                        LOGGER.log(Level.WARNING, ex, () -> "Error reporting CSP to " + receiver);
+                    }
+                }
+            } catch (IOException e) {
+                LOGGER.log(Level.WARNING, e, () -> "Failed to read request body for /" + URL + "/" + restOfPath);
+            }
+            return HttpResponses.ok();
+        } catch (RuntimeException ex) {
+            LOGGER.log(Level.FINE, "Unexpected rest of path failed to decode: " + restOfPath + " with exception: " + ex.getMessage());
             return HttpResponses.ok();
         }
-        ContentSecurityPolicyReceiver.Context context = new ContentSecurityPolicyReceiver.Context(restOfPath.substring(0, splitIdx), restOfPath.substring(splitIdx + 1));
-        try (Reader reader = req.getReader()) {
-            String report = IOUtils.toString(reader);
-            LOGGER.log(Level.FINE, () -> context + " " + report);
-            final JSONObject jsonObject = JSONObject.fromObject(report);
-            for (ContentSecurityPolicyReceiver receiver : ExtensionList.lookup(ContentSecurityPolicyReceiver.class)) {
-                try {
-                    receiver.report(context, current, jsonObject);
-                } catch (Exception ex) {
-                    LOGGER.log(Level.WARNING, ex, () -> "Error reporting CSP to " + receiver);
-                }
-            }
-        } catch (IOException e) {
-            LOGGER.log(Level.WARNING, e, () -> "Failed to read request body for /" + URL + "/" + restOfPath);
-        }
-        return HttpResponses.ok();
     }
 
     @Extension
