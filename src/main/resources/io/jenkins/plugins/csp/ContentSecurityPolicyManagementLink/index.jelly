@@ -31,6 +31,9 @@ THE SOFTWARE.
                 ${%blurb}
             </p>
             <p>
+                ${%blurb2}
+            </p>
+            <p>
                 ${%configure(rootURL)}
             </p>
             <table class="sortable pane bigtable">
