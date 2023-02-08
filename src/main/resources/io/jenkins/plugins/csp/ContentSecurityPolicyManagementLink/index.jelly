@@ -24,17 +24,14 @@ THE SOFTWARE.
 -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout" xmlns:f="/lib/form">
-    <l:layout title="${it.displayName}">
-        <l:side-panel>
-            <l:tasks>
-                <l:task icon="icon-up icon-md" href="${rootURL}" title="${%Back to Dashboard}"/>
-                <l:task icon="icon-gear2 icon-md" href="${rootURL}" title="${%Manage Jenkins}"/>
-            </l:tasks>
-        </l:side-panel>
+    <l:layout title="${it.displayName}" type="one-column">
         <l:main-panel>
             <h1>${%Content-Security-Policy Report}</h1>
             <p>
                 ${%blurb}
+            </p>
+            <p>
+                ${%blurb2}
             </p>
             <p>
                 ${%configure(rootURL)}
