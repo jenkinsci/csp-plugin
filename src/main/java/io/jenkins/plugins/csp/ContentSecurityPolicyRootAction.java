@@ -70,6 +70,7 @@ public class ContentSecurityPolicyRootAction extends InvisibleAction implements 
         return URL;
     }
 
+    @SuppressWarnings({"lgtm[jenkins/csrf]", "lgtm[jenkins/missing-permission-check]"})
     public HttpResponse doDynamic(StaplerRequest req) {
         String restOfPath = StringUtils.removeStart(req.getRestOfPath(), "/");
 
