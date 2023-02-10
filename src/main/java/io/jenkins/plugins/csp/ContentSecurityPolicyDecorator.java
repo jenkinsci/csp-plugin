@@ -26,6 +26,8 @@ package io.jenkins.plugins.csp;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.model.PageDecorator;
+import hudson.model.User;
+import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.Symbol;
 import org.kohsuke.accmod.Restricted;
@@ -58,7 +60,10 @@ public class ContentSecurityPolicyDecorator extends PageDecorator {
     }
 
     public String getValue(String rootURL) {
-        return getConfiguredRules() + "; report-uri " + rootURL + "/" + ContentSecurityPolicyRootAction.URL + "/" + getContext();
+        if (Jenkins.get().hasPermission(Jenkins.READ)) {
+            return getConfiguredRules() + "; report-uri " + rootURL + "/" + ContentSecurityPolicyRootAction.URL + "/" + getContext();
+        }
+        return getConfiguredRules();
     }
 
     private static String getContext() {
@@ -72,6 +77,7 @@ public class ContentSecurityPolicyDecorator extends PageDecorator {
         Object nearestObjectName = nearest.getObject().getClass().getName();
         String restOfUrl = nearest.getRestOfUrl();
 
-        return nearestObjectName + ":" + restOfUrl;
+        final User current = User.current();
+        return Context.encodeContext(nearestObjectName, current, restOfUrl);
     }
 }
