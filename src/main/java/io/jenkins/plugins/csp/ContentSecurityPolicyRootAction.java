@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.kohsuke.stapler.verb.POST;
 
 /**
  * Reporting endpoint for CSP violations.
@@ -70,7 +71,8 @@ public class ContentSecurityPolicyRootAction extends InvisibleAction implements 
         return URL;
     }
 
-    @SuppressWarnings({"lgtm[jenkins/csrf]", "lgtm[jenkins/no-permission-check]"})
+    @SuppressWarnings("lgtm[jenkins/no-permission-check]")
+    @POST
     public HttpResponse doDynamic(StaplerRequest req) {
         String restOfPath = StringUtils.removeStart(req.getRestOfPath(), "/");
 
