@@ -1,6 +1,6 @@
 = Content Security Policy Plugin
 
-WARNING: Jenkins is currently (version 2.359) not ready for this plugin to be used to enforce Content-Security-Policy for most resources in production environments.
+WARNING: Jenkins is currently (version 2.390) not ready for this plugin to be used to enforce Content-Security-Policy for most resources in production environments.
 Many features, both in core and plugins, will stop working with the default rule set.
 At this time, this plugin is a utility for Jenkins developers, not for Jenkins administrators.
 
