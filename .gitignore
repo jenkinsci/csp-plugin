@@ -1,9 +1,15 @@
-# Maven
-/target/
+target
 
-# Maven HPI Plugin
-/work/
+# mvn hpi:run
+work
 
-# IntelliJ
-/.idea/
+# IntelliJ IDEA project files
 *.iml
+*.iws
+*.ipr
+.idea
+
+# Eclipse project files
+.settings
+.classpath
+.project
