@@ -36,59 +36,70 @@ THE SOFTWARE.
             <p>
                 ${%configure(rootURL)}
             </p>
-            <table class="jenkins-table sortable pane">
-                <tr>
-                    <th>${%Date}</th>
-                    <th>${%Affected User}</th>
-                    <th>${%Context Class}</th>
-                    <th>${%Context View}</th>
-                    <th>${%Violated Directive}</th>
-                    <th>${%Blocked URI}</th>
-                    <th>${%Sample}</th>
-                </tr>
-                <j:forEach items="${it.records}" var="record">
-                    <tr>
-                        <td>
-                            <i:formatDate value="${record.date}" type="both" dateStyle="short" timeStyle="medium"/>
-                        </td>
-                        <td>
-                            <j:set var="user" value="${record.user}"/>
-                            <j:choose>
-                                <j:when test="${user == null}">
-                                    <em>(anonymous)</em>
-                                </j:when>
-                                <j:otherwise>
-                                    <a href="${rootURL}/${user.url}" class="model-link inside">
-                                        ${user.displayName}
-                                    </a>
-                                </j:otherwise>
-                            </j:choose>
-                        </td>
-                        <td>
-                            <j:set var="plugin" value="${record.contextPlugin}"/>
-                            <j:choose>
-                                <j:when test="${plugin == null}">
-                                    ${%contextWithoutPlugin(record.contextClassName)}
-                                </j:when>
-                                <j:otherwise>
-                                    ${%contextWithPlugin(record.contextClassName, plugin.url, plugin.displayName)}
-                                </j:otherwise>
-                            </j:choose>
-                        </td>
-                        <td>${record.contextViewName}</td>
-                        <td>${record.violatedDirective}</td>
-                        <td>${record.blockedUri}</td>
-                        <td>
-                            <code><pre>${record.scriptSample}</pre></code>
-                        </td>
-                    </tr>
-                </j:forEach>
-            </table>
-            <p>
-                <f:form action="clear" method="post">
-                    <f:submit value="${%Clear}"/>
-                </f:form>
-            </p>
+
+            <j:choose>
+                <j:when test="${it.records.size() > 0}">
+                    <table class="jenkins-table sortable pane">
+                        <tr>
+                            <th>${%Date}</th>
+                            <th>${%Affected User}</th>
+                            <th>${%Context Class}</th>
+                            <th>${%Context View}</th>
+                            <th>${%Violated Directive}</th>
+                            <th>${%Blocked URI}</th>
+                            <th>${%Sample}</th>
+                        </tr>
+                        <j:forEach items="${it.records}" var="record">
+                            <tr>
+                                <td>
+                                    <i:formatDate value="${record.date}" type="both" dateStyle="short" timeStyle="medium"/>
+                                </td>
+                                <td>
+                                    <j:set var="user" value="${record.user}"/>
+                                    <j:choose>
+                                        <j:when test="${user == null}">
+                                            <em>(anonymous)</em>
+                                        </j:when>
+                                        <j:otherwise>
+                                            <a href="${rootURL}/${user.url}" class="model-link inside">
+                                                ${user.displayName}
+                                            </a>
+                                        </j:otherwise>
+                                    </j:choose>
+                                </td>
+                                <td>
+                                    <j:set var="plugin" value="${record.contextPlugin}"/>
+                                    <j:choose>
+                                        <j:when test="${plugin == null}">
+                                            ${%contextWithoutPlugin(record.contextClassName)}
+                                        </j:when>
+                                        <j:otherwise>
+                                            ${%contextWithPlugin(record.contextClassName, plugin.url, plugin.displayName)}
+                                        </j:otherwise>
+                                    </j:choose>
+                                </td>
+                                <td>${record.contextViewName}</td>
+                                <td>${record.violatedDirective}</td>
+                                <td>${record.blockedUri}</td>
+                                <td>
+                                    <code><pre>${record.scriptSample}</pre></code>
+                                </td>
+                            </tr>
+                        </j:forEach>
+                    </table>
+
+                </j:when>
+                <j:otherwise>
+                    <l:notice title="${%No reports}" icon="symbol-checkmark-done-outline plugin-ionicons-api" text="${%No reports}" />
+                </j:otherwise>
+            </j:choose>
+            <j:if test="${it.records.size() > 0}">
+                <p>
+                    <f:form action="clear" method="post">
+                        <f:submit value="${%Clear}"/>
+                    </f:form>
+                </p>
+            </j:if>
         </l:main-panel>
     </l:layout>
 </j:jelly>
