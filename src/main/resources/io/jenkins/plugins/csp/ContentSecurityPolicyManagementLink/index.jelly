@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout" xmlns:f="/lib/form">
+<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
     <l:layout title="${it.displayName}" type="one-column">
         <l:main-panel>
             <h1>${%Content-Security-Policy Report}</h1>
@@ -36,7 +36,7 @@ THE SOFTWARE.
             <p>
                 ${%configure(rootURL)}
             </p>
-            <table class="sortable pane bigtable">
+            <table class="jenkins-table sortable pane">
                 <tr>
                     <th>${%Date}</th>
                     <th>${%Affected User}</th>
@@ -48,7 +48,9 @@ THE SOFTWARE.
                 </tr>
                 <j:forEach items="${it.records}" var="record">
                     <tr>
-                        <td>${record.time}</td>
+                        <td>
+                            <i:formatDate value="${record.date}" type="both" dateStyle="short" timeStyle="medium"/>
+                        </td>
                         <td>
                             <j:set var="user" value="${record.user}"/>
                             <j:choose>
