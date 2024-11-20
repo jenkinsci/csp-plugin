@@ -26,10 +26,10 @@ package io.jenkins.plugins.csp;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Util;
-import hudson.model.User;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import jenkins.security.HMACConfidentialKey;
+import org.springframework.security.core.Authentication;
 
 public class Context {
     private static final HMACConfidentialKey KEY = new HMACConfidentialKey(Context.class, "key");
@@ -44,8 +44,11 @@ public class Context {
         return new String(Base64.getUrlDecoder().decode(b64), StandardCharsets.UTF_8);
     }
 
-    public static String encodeContext(@NonNull final Object ancestorName, @CheckForNull final User user, @NonNull final String restOfPath) {
-        final String userId = user == null ? "" : user.getId();
+    public static String encodeContext(
+            @NonNull final Object ancestorName,
+            @CheckForNull final Authentication authentication,
+            @NonNull final String restOfPath) {
+        final String userId = authentication == null ? "" : authentication.getName();
         final String encodedContext = toBase64(userId) + ":" + toBase64(ancestorName.toString()) + ":" + toBase64(restOfPath);
         final String mac = Base64.getUrlEncoder().encodeToString(KEY.mac(encodedContext.getBytes(StandardCharsets.UTF_8)));
         return mac + ":" + encodedContext;

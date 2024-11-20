@@ -30,6 +30,10 @@ import hudson.model.UnprotectedRootAction;
 import hudson.model.User;
 import hudson.security.csrf.CrumbExclusion;
 import hudson.util.HttpResponses;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -37,12 +41,9 @@ import org.jenkinsci.Symbol;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.springframework.security.core.Authentication;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.logging.Level;
@@ -51,12 +52,12 @@ import org.kohsuke.stapler.verb.POST;
 
 /**
  * Reporting endpoint for CSP violations.
- * {@link StaplerRequest#getRestOfPath()} is used to associate violations with
+ * {@link StaplerRequest2#getRestOfPath()} is used to associate violations with
  * the view they occur in; {@link ContentSecurityPolicyDecorator} needs to have a dynamic report
  * URL for that.
  * <p>
  * While this is an {@link hudson.model.UnprotectedRootAction}, only submissions with correct HMAC
- * from {@link Context#encodeContext(Object, hudson.model.User, String)} will be accepted.
+ * from {@link Context#encodeContext(Object, Authentication, String)} will be accepted.
  */
 @Extension
 @Restricted(NoExternalUse.class)
@@ -73,7 +74,7 @@ public class ContentSecurityPolicyRootAction extends InvisibleAction implements 
 
     @SuppressWarnings("lgtm[jenkins/no-permission-check]")
     @POST
-    public HttpResponse doDynamic(StaplerRequest req) {
+    public HttpResponse doDynamic(StaplerRequest2 req) {
         String restOfPath = StringUtils.removeStart(req.getRestOfPath(), "/");
 
         try {
