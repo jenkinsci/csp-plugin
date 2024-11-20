@@ -194,6 +194,9 @@ public class ContentSecurityPolicyManagementLink extends ManagementLink implemen
         }
 
         public PluginWrapper getContextPlugin() {
+            if (contextClassName.isEmpty()) {
+                return null;
+            }
             try {
                 final PluginManager pluginManager = Jenkins.get().getPluginManager();
                 return pluginManager.whichPlugin(pluginManager.uberClassLoader.loadClass(this.contextClassName));

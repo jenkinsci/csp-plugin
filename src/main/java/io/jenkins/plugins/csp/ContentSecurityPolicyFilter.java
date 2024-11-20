@@ -84,7 +84,7 @@ public class ContentSecurityPolicyFilter implements HttpServletFilter {
              * ContentSecurityPolicyDecorator.
              */
             String context = Context.encodeContext(
-                    ContentSecurityPolicyFilter.class.getName(),
+                    "",
                     Jenkins.getAuthentication2(),
                     StringUtils.removeStart(req.getRequestURI(), req.getContextPath()));
             rsp.setHeader(header, getValue(context));
