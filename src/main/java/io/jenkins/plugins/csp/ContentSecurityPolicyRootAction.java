@@ -42,6 +42,7 @@ import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest2;
+import org.springframework.security.core.Authentication;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -56,7 +57,7 @@ import org.kohsuke.stapler.verb.POST;
  * URL for that.
  * <p>
  * While this is an {@link hudson.model.UnprotectedRootAction}, only submissions with correct HMAC
- * from {@link Context#encodeContext(Object, hudson.model.User, String)} will be accepted.
+ * from {@link Context#encodeContext(Object, Authentication, String)} will be accepted.
  */
 @Extension
 @Restricted(NoExternalUse.class)
