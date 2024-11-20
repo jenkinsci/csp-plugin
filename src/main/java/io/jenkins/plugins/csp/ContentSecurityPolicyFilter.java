@@ -30,10 +30,12 @@ import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jenkins.model.Jenkins;
+import jenkins.security.ResourceDomainConfiguration;
 import jenkins.util.HttpServletFilter;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
+import org.kohsuke.accmod.restrictions.suppressions.SuppressRestrictedWarnings;
 
 /**
  * Inject the CSP header based on {@link ContentSecurityPolicyConfiguration} into Jenkins views.
@@ -72,10 +74,11 @@ public class ContentSecurityPolicyFilter implements HttpServletFilter {
         return getConfiguredRules();
     }
 
+    @SuppressRestrictedWarnings({ResourceDomainConfiguration.class})
     @Override
     public boolean handle(HttpServletRequest req, HttpServletResponse rsp) {
         final String header = getHeader();
-        if (rsp.getHeader(header) == null) {
+        if (rsp.getHeader(header) == null && !ResourceDomainConfiguration.isResourceRequest(req)) {
             /*
              * Set the header without a context at this low layer. We later attempt to add context information in
              * ContentSecurityPolicyDecorator.
