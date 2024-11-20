@@ -23,7 +23,7 @@
  */
 package io.jenkins.plugins.csp;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.ExtensionList;
 import jakarta.servlet.Filter;
@@ -38,8 +38,8 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 /**
  * Inject the CSP header based on {@link ContentSecurityPolicyConfiguration} into Jenkins views.
  * The reporting URL is implemented by {@link ContentSecurityPolicyRootAction}.
- * At the {@link Filter} level, {@link Context} is not available.
- * We later attempt to add {@link Context} information in {@link ContentSecurityPolicyDecorator}.
+ * At the {@link Filter} level, Stapler {@link Context} information is not available.
+ * We later attempt to add Stapler {@link Context} information in {@link ContentSecurityPolicyDecorator}.
  */
 @Extension
 @Restricted(NoExternalUse.class)
@@ -58,15 +58,13 @@ public class ContentSecurityPolicyFilter implements HttpServletFilter {
         return reportOnly ? "Content-Security-Policy-Report-Only" : "Content-Security-Policy";
     }
 
-    static String getValue(@CheckForNull String context) {
-        if (context != null) {
-            final Jenkins jenkins = Jenkins.getInstanceOrNull();
-            if (jenkins != null) {
-                final String rootUrl = jenkins.getRootUrl();
-                if (rootUrl != null && jenkins.hasPermission(Jenkins.READ)) {
-                    return getConfiguredRules() + "; report-uri " + rootUrl + "/" + ContentSecurityPolicyRootAction.URL
-                            + "/" + context;
-                }
+    static String getValue(@NonNull String context) {
+        final Jenkins jenkins = Jenkins.getInstanceOrNull();
+        if (jenkins != null) {
+            final String rootUrl = jenkins.getRootUrl();
+            if (rootUrl != null && jenkins.hasPermission(Jenkins.READ)) {
+                return getConfiguredRules() + "; report-uri " + rootUrl + "/" + ContentSecurityPolicyRootAction.URL
+                        + "/" + context;
             }
         }
         return getConfiguredRules();
@@ -77,8 +75,8 @@ public class ContentSecurityPolicyFilter implements HttpServletFilter {
         final String header = getHeader();
         if (rsp.getHeader(header) == null) {
             /*
-             * Set the header without a context at this low layer. We later attempt to add context information in
-             * ContentSecurityPolicyDecorator.
+             * Set the header without Stapler context information at this low layer. We later attempt to add Stapler
+             * context information in ContentSecurityPolicyDecorator.
              */
             String context = Context.encodeContext(
                     ContentSecurityPolicyFilter.class.getName(),
