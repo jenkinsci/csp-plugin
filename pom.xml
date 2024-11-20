@@ -39,6 +39,11 @@
             <groupId>io.jenkins.plugins</groupId>
             <artifactId>ionicons-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.kohsuke</groupId>
+            <artifactId>access-modifier-suppressions</artifactId>
+            <version>1.33</version>
+        </dependency>
     </dependencies>
 
     <licenses>
