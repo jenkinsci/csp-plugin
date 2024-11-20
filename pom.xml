@@ -12,7 +12,7 @@
     <version>${revision}${changelist}</version>
     <packaging>hpi</packaging>
     <properties>
-        <revision>1.4</revision>
+        <revision>1.5</revision>
         <changelist>-SNAPSHOT</changelist>
         <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
         <jenkins.baseline>2.479</jenkins.baseline>
@@ -38,6 +38,20 @@
         <dependency>
             <groupId>io.jenkins.plugins</groupId>
             <artifactId>ionicons-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kohsuke</groupId>
+            <artifactId>access-modifier-suppressions</artifactId>
+            <version>${access-modifier-checker.version}</version>
+            <!-- Not needed at runtime -->
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <!-- Upper bounds and comes from core -->
+                    <groupId>org.kohsuke</groupId>
+                    <artifactId>access-modifier-annotation</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
