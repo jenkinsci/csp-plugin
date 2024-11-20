@@ -13,6 +13,7 @@ import org.htmlunit.html.HtmlPage;
 import org.htmlunit.util.NameValuePair;
 import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.FlagRule;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.kohsuke.accmod.restrictions.suppressions.SuppressRestrictedWarnings;
 import org.xml.sax.SAXException;
@@ -25,6 +26,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class ContentSecurityPolicyFilterTest {
     @Rule
     public JenkinsRule j = new JenkinsRule();
+
+    @Rule
+    public FlagRule dbsCsp = FlagRule.systemProperty(DBS_CSP_SYSTEM_PROPERTY);
 
     @Test
     public void testRegularPageHeaders() throws IOException, SAXException {
@@ -86,6 +90,33 @@ public class ContentSecurityPolicyFilterTest {
     }
 
     @Test
+    public void directoryBrowserSupportCustomWinsOverCspPluginWithEnforcing() throws IOException, SAXException {
+        final String customValue = "foo";
+        System.setProperty(DBS_CSP_SYSTEM_PROPERTY, customValue);
+        ExtensionList.lookupSingleton(ContentSecurityPolicyConfiguration.class).setReportOnly(false);
+        try (JenkinsRule.WebClient wc = j.createWebClient()) {
+            final Page htmlPage = wc.goTo("userContent/readme.txt", "text/plain");
+            assertThat(htmlPage.getWebResponse().getStatusCode(), is(200));
+            final Map<String, String> cspHeaders = getCspResponseHeadersMap(htmlPage.getWebResponse());
+            assertThat(cspHeaders.size(), is(DBS_AND_ENFORCING_CSP_HEADERS.size()));
+            assertThat(cspHeaders.get(CONTENT_SECURITY_POLICY_HEADER), equalTo(customValue));
+        }
+    }
+
+    @Test
+    public void directoryBrowserSupportDisabledLosesToCspPluginWithEnforcing() throws IOException, SAXException {
+        System.setProperty(DBS_CSP_SYSTEM_PROPERTY, "");
+        ExtensionList.lookupSingleton(ContentSecurityPolicyConfiguration.class).setReportOnly(false);
+        try (JenkinsRule.WebClient wc = j.createWebClient()) {
+            final Page htmlPage = wc.goTo("userContent/readme.txt", "text/plain");
+            assertThat(htmlPage.getWebResponse().getStatusCode(), is(200));
+            final Map<String, String> cspHeaders = getCspResponseHeadersMap(htmlPage.getWebResponse());
+            assertThat(cspHeaders.size(), is(1));
+            assertThat(cspHeaders.get(CONTENT_SECURITY_POLICY_HEADER), startsWith(ContentSecurityPolicyConfiguration.DEFAULT_RULE));
+        }
+    }
+
+    @Test
     public void resourceDomainHasNoHeaderWithReporting() throws IOException, SAXException {
         ResourceDomainConfiguration.get().setUrl(j.getURL().toExternalForm().replace("localhost", "127.0.0.1")); // TODO ugh
         try (JenkinsRule.WebClient wc = j.createWebClient().withRedirectEnabled(true)) {
@@ -124,6 +155,7 @@ public class ContentSecurityPolicyFilterTest {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    private static final String DBS_CSP_SYSTEM_PROPERTY = "hudson.model.DirectoryBrowserSupport.CSP";
     private static final String CONTENT_SECURITY_POLICY_HEADER = "Content-Security-Policy";
     private static final String CONTENT_SECURITY_POLICY_REPORT_ONLY_HEADER = "Content-Security-Policy-Report-Only";
     private static final String X_WEBKIT_CSP_HEADER = "X-WebKit-CSP";
