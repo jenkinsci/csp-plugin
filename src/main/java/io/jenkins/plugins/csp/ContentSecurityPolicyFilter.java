@@ -80,7 +80,11 @@ public class ContentSecurityPolicyFilter implements HttpServletFilter {
              * Set the header without a context at this low layer. We later attempt to add context information in
              * ContentSecurityPolicyDecorator.
              */
-            rsp.setHeader(header, getValue(null));
+            String context = Context.encodeContext(
+                    ContentSecurityPolicyFilter.class.getName(),
+                    Jenkins.getAuthentication2(),
+                    StringUtils.removeStart(req.getRequestURI(), req.getContextPath()));
+            rsp.setHeader(header, getValue(context));
         }
         return false;
     }

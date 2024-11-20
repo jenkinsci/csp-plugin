@@ -25,7 +25,7 @@ package io.jenkins.plugins.csp;
 
 import hudson.Extension;
 import hudson.model.PageDecorator;
-import hudson.model.User;
+import jenkins.model.Jenkins;
 import org.jenkinsci.Symbol;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -45,7 +45,7 @@ public class ContentSecurityPolicyDecorator extends PageDecorator {
 
     private static String getContext() {
 
-        final List<Ancestor> ancestors = Stapler.getCurrentRequest().getAncestors();
+        final List<Ancestor> ancestors = Stapler.getCurrentRequest2().getAncestors();
         if (ancestors.isEmpty()) {
             // probably doesn't happen?
             return "";
@@ -54,13 +54,13 @@ public class ContentSecurityPolicyDecorator extends PageDecorator {
         Object nearestObjectName = nearest.getObject().getClass().getName();
         String restOfUrl = nearest.getRestOfUrl();
 
-        final User current = User.current();
-        return Context.encodeContext(nearestObjectName, current, restOfUrl);
+        return Context.encodeContext(nearestObjectName, Jenkins.getAuthentication2(), restOfUrl);
     }
 
     public static void setHeader() {
         // Avoiding <st:header> because that adds an additional header rather than replacing the existing one.
+        String context = getContext();
         Stapler.getCurrentResponse2()
-                .setHeader(ContentSecurityPolicyFilter.getHeader(), ContentSecurityPolicyFilter.getValue(getContext()));
+                .setHeader(ContentSecurityPolicyFilter.getHeader(), ContentSecurityPolicyFilter.getValue(context));
     }
 }
