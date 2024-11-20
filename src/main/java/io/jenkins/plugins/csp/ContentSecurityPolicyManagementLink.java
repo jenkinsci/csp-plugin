@@ -32,6 +32,7 @@ import hudson.PluginWrapper;
 import hudson.model.ManagementLink;
 import hudson.model.PeriodicWork;
 import hudson.model.User;
+import java.util.Date;
 import jenkins.model.Jenkins;
 import jenkins.util.SystemProperties;
 import net.sf.json.JSONObject;
@@ -182,6 +183,10 @@ public class ContentSecurityPolicyManagementLink extends ManagementLink implemen
 
         public Instant getTime() {
             return time;
+        }
+
+        public Date getDate() {
+            return Date.from(time);
         }
 
         public String getUsername() {
