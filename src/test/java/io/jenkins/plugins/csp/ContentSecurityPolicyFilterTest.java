@@ -118,7 +118,7 @@ public class ContentSecurityPolicyFilterTest {
 
     @Test
     public void resourceDomainHasNoHeaderWithReporting() throws IOException, SAXException {
-        ResourceDomainConfiguration.get().setUrl(j.getURL().toExternalForm().replace("localhost", "127.0.0.1")); // TODO ugh
+        ResourceDomainConfiguration.get().setUrl(j.getURL().toExternalForm().replace("localhost", RRURL_HOSTNAME));
         try (JenkinsRule.WebClient wc = j.createWebClient().withRedirectEnabled(true)) {
             final Page htmlPage = wc.goTo("userContent/readme.txt", "text/plain");
             assertThat(htmlPage.getWebResponse().getStatusCode(), is(200));
@@ -129,7 +129,7 @@ public class ContentSecurityPolicyFilterTest {
 
     @Test
     public void resourceDomainHasNoHeaderWithEnforcing() throws IOException, SAXException {
-        ResourceDomainConfiguration.get().setUrl(j.getURL().toExternalForm().replace("localhost", "127.0.0.1")); // TODO ugh
+        ResourceDomainConfiguration.get().setUrl(j.getURL().toExternalForm().replace("localhost", RRURL_HOSTNAME));
         ExtensionList.lookupSingleton(ContentSecurityPolicyConfiguration.class).setReportOnly(false);
         try (JenkinsRule.WebClient wc = j.createWebClient().withRedirectEnabled(true)) {
             final Page htmlPage = wc.goTo("userContent/readme.txt", "text/plain");
@@ -155,6 +155,8 @@ public class ContentSecurityPolicyFilterTest {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    // https://github.com/jenkinsci/jenkins/blob/b8e5141a9e69318d908982eaecdfea798010f954/test/src/test/java/jenkins/security/ResourceDomainTest.java#L45-L53
+    public static final String RRURL_HOSTNAME = "127.0.0.1";
     private static final String DBS_CSP_SYSTEM_PROPERTY = "hudson.model.DirectoryBrowserSupport.CSP";
     private static final String CONTENT_SECURITY_POLICY_HEADER = "Content-Security-Policy";
     private static final String CONTENT_SECURITY_POLICY_REPORT_ONLY_HEADER = "Content-Security-Policy-Report-Only";
