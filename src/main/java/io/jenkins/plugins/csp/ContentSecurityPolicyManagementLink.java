@@ -82,7 +82,7 @@ public class ContentSecurityPolicyManagementLink extends ManagementLink implemen
 
     @Override
     public String getDescription() {
-        return "Review reported Content-Security-Policy violations."; // TODO i18n
+        return "Review reported Content Security Policy violations."; // TODO i18n
     }
 
     @NonNull

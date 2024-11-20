@@ -34,7 +34,7 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundSetter;
 
 /**
- * Customize the Content-Security-Policy rules.
+ * Customize the Content Security Policy rules.
  */
 @Extension
 @Restricted(NoExternalUse.class)
