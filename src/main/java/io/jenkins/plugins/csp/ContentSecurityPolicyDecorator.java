@@ -24,11 +24,8 @@
 package io.jenkins.plugins.csp;
 
 import hudson.Extension;
-import hudson.ExtensionList;
 import hudson.model.PageDecorator;
 import hudson.model.User;
-import jenkins.model.Jenkins;
-import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.Symbol;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -46,26 +43,6 @@ import java.util.List;
 @Symbol("contentSecurityPolicyDecorator")
 public class ContentSecurityPolicyDecorator extends PageDecorator {
 
-    private static String getConfiguredRules() {
-        final String rule = ExtensionList.lookupSingleton(ContentSecurityPolicyConfiguration.class).getRule();
-        if (rule == null) {
-            return null;
-        }
-        return StringUtils.removeEnd(rule.trim(), ";");
-    }
-
-    public String getHeader() {
-        final boolean reportOnly = ExtensionList.lookupSingleton(ContentSecurityPolicyConfiguration.class).isReportOnly();
-        return reportOnly ? "Content-Security-Policy-Report-Only" : "Content-Security-Policy";
-    }
-
-    public String getValue(String rootURL) {
-        if (Jenkins.get().hasPermission(Jenkins.READ)) {
-            return getConfiguredRules() + "; report-uri " + rootURL + "/" + ContentSecurityPolicyRootAction.URL + "/" + getContext();
-        }
-        return getConfiguredRules();
-    }
-
     private static String getContext() {
 
         final List<Ancestor> ancestors = Stapler.getCurrentRequest().getAncestors();
@@ -79,5 +56,11 @@ public class ContentSecurityPolicyDecorator extends PageDecorator {
 
         final User current = User.current();
         return Context.encodeContext(nearestObjectName, current, restOfUrl);
+    }
+
+    public static void setHeader() {
+        // Avoiding <st:header> because that adds an additional header rather than replacing the existing one.
+        Stapler.getCurrentResponse2()
+                .setHeader(ContentSecurityPolicyFilter.getHeader(), ContentSecurityPolicyFilter.getValue(getContext()));
     }
 }
