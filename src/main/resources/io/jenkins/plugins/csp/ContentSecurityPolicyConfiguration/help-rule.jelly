@@ -33,6 +33,6 @@ THE SOFTWARE.
             </pre>
         </code>
         Do not add <code>report-uri</code> here.
-        Jenkins dynamically determines the <code>report-uri</code> directive for each page visited to allow associating problems with views and adds it to the Content Security Policy header.
+        Jenkins dynamically determines the <code>report-uri</code> directive for each page visited to allow associating problems with views and adds it to the <code>Content-Security-Policy</code> header.
     </div>
 </j:jelly>
