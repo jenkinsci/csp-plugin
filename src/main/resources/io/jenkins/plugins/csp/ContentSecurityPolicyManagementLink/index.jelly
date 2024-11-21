@@ -39,7 +39,7 @@ THE SOFTWARE.
 
             <j:choose>
                 <j:when test="${it.records.size() > 0}">
-                    <table class="jenkins-table sortable pane">
+                    <table class="jenkins-table sortable">
                         <tr>
                             <th>${%Date}</th>
                             <th>${%Affected User}</th>
