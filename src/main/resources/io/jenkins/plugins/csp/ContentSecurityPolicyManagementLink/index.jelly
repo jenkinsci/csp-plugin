@@ -97,8 +97,7 @@ THE SOFTWARE.
 
                 </j:when>
                 <j:otherwise>
-                    <!-- TODO: when baseline is at 2.479.x or higher remove the text attribute -->
-                    <l:notice title="${%No reports}" icon="symbol-checkmark-done-outline plugin-ionicons-api" text="${%No reports}" />
+                    <l:notice title="${%No reports}" icon="symbol-checkmark-done-outline plugin-ionicons-api" />
                 </j:otherwise>
             </j:choose>
             <j:if test="${it.records.size() > 0}">
