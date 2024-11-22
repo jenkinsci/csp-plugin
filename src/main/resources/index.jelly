@@ -1,4 +1,4 @@
 <?jelly escape-by-default='true'?>
 <div>
-    This plugin implements Content-Security-Policy protection for the classic Jenkins UI.
+    This plugin implements Content Security Policy protection for Jenkins.
 </div>

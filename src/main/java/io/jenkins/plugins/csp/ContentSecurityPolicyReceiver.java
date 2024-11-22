@@ -34,7 +34,7 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 import java.util.Objects;
 
 /**
- * Extension point for receivers of Content-Security-Policy reports.
+ * Extension point for receivers of Content Security Policy reports.
  */
 @Restricted(NoExternalUse.class)
 public interface ContentSecurityPolicyReceiver extends ExtensionPoint {

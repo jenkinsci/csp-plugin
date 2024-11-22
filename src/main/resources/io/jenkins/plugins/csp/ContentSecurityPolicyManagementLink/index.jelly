@@ -26,7 +26,7 @@ THE SOFTWARE.
 <j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
     <l:layout title="${it.displayName}" type="one-column">
         <l:main-panel>
-            <h1>${%Content-Security-Policy Report}</h1>
+            <h1>${%Content Security Policy Report}</h1>
             <p>
                 ${%blurb}
             </p>
