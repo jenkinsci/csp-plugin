@@ -1,0 +1,26 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:l="/lib/layout">
+  <div class="jenkins-alert jenkins-alert-${it.enableReportOnly ? 'warning' : 'info'}">
+    <form method="post" action="${rootURL}/${it.url}/act" name="${it.id}">
+      <l:isAdmin>
+        <j:choose>
+          <j:when test="${it.enableReportOnly}">
+            <f:submit name="toggle" value="${%Report Only}"/>
+          </j:when>
+          <j:otherwise>
+            <f:submit name="toggle" value="${%Enforce CSP}"/>
+          </j:otherwise>
+        </j:choose>
+        <f:submit name="dismiss" value="${%Dismiss}"/>
+      </l:isAdmin>
+    </form>
+    <j:choose>
+      <j:when test="${it.enableReportOnly}">
+        <div>${%enableReportOnly}</div>
+      </j:when>
+      <j:otherwise>
+        <div>${%disableReportOnly}</div>
+      </j:otherwise>
+    </j:choose>
+  </div>
+</j:jelly>
