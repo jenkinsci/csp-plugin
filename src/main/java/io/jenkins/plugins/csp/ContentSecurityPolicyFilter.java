@@ -65,7 +65,7 @@ public class ContentSecurityPolicyFilter implements HttpServletFilter {
         if (jenkins != null) {
             final String rootUrl = jenkins.getRootUrl();
             if (rootUrl != null && jenkins.hasPermission(Jenkins.READ)) {
-                return getConfiguredRules() + "; report-uri " + rootUrl + "/" + ContentSecurityPolicyRootAction.URL
+                return getConfiguredRules() + "; report-uri " + rootUrl + ContentSecurityPolicyRootAction.URL
                         + "/" + context;
             }
         }
