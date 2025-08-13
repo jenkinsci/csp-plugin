@@ -9,11 +9,11 @@
     </parent>
     <groupId>io.jenkins.plugins</groupId>
     <artifactId>csp</artifactId>
-    <version>${revision}${changelist}</version>
+    <version>${revision}.${changelist}</version>
     <packaging>hpi</packaging>
     <properties>
-        <revision>1.5</revision>
-        <changelist>-SNAPSHOT</changelist>
+        <revision>1</revision>
+        <changelist>999999-SNAPSHOT</changelist>
         <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
         <jenkins.baseline>2.479</jenkins.baseline>
         <jenkins.version>${jenkins.baseline}.3</jenkins.version>
