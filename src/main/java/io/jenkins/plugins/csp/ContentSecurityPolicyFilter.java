@@ -32,7 +32,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jenkins.model.Jenkins;
 import jenkins.security.ResourceDomainConfiguration;
 import jenkins.util.HttpServletFilter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.accmod.restrictions.suppressions.SuppressRestrictedWarnings;
@@ -65,7 +65,7 @@ public class ContentSecurityPolicyFilter implements HttpServletFilter {
         if (jenkins != null) {
             final String rootUrl = jenkins.getRootUrl();
             if (rootUrl != null && jenkins.hasPermission(Jenkins.READ)) {
-                return getConfiguredRules() + "; report-uri " + rootUrl + "/" + ContentSecurityPolicyRootAction.URL
+                return getConfiguredRules() + "; report-uri " + rootUrl + ContentSecurityPolicyRootAction.URL
                         + "/" + context;
             }
         }
