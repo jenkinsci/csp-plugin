@@ -2,7 +2,6 @@ package io.jenkins.plugins.csp;
 
 import hudson.ExtensionList;
 import hudson.model.DirectoryBrowserSupport;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,53 +10,68 @@ import org.htmlunit.Page;
 import org.htmlunit.WebResponse;
 import org.htmlunit.html.HtmlPage;
 import org.htmlunit.util.NameValuePair;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.FlagRule;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.kohsuke.accmod.restrictions.suppressions.SuppressRestrictedWarnings;
-import org.xml.sax.SAXException;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class ContentSecurityPolicyFilterTest {
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
+@WithJenkins
+class ContentSecurityPolicyFilterTest {
 
-    @Rule
-    public FlagRule dbsCsp = FlagRule.systemProperty(DBS_CSP_SYSTEM_PROPERTY);
+    private JenkinsRule j;
+
+    private String dbsCsp;
+
+    @BeforeEach
+    void setUp(JenkinsRule rule) {
+        j = rule;
+        dbsCsp = System.getProperty(DBS_CSP_SYSTEM_PROPERTY);
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (dbsCsp != null) {
+            System.setProperty(DBS_CSP_SYSTEM_PROPERTY, dbsCsp);
+        } else {
+            System.clearProperty(DBS_CSP_SYSTEM_PROPERTY);
+        }
+    }
 
     @Test
-    public void testRegularPageHeaders() throws IOException, SAXException {
+    void testRegularPageHeaders() throws Exception {
         try (JenkinsRule.WebClient wc = j.createWebClient()) {
             final HtmlPage htmlPage = wc.goTo("userContent/");
             assertThat(htmlPage.getWebResponse().getStatusCode(), is(200));
-            final List<NameValuePair> cspHeaders = htmlPage.getWebResponse().getResponseHeaders().stream().filter(p -> p.getName().startsWith(CONTENT_SECURITY_POLICY_HEADER)).collect(Collectors.toList());
+            final List<NameValuePair> cspHeaders = htmlPage.getWebResponse().getResponseHeaders().stream().filter(p -> p.getName().startsWith(CONTENT_SECURITY_POLICY_HEADER)).toList();
             assertThat(cspHeaders.size(), is(1));
             assertThat(cspHeaders.get(0).getValue(), startsWith(ContentSecurityPolicyConfiguration.DEFAULT_RULE));
         }
     }
 
     @Test
-    public void testBundledResource() throws IOException, SAXException {
+    void testBundledResource() throws Exception {
         try (JenkinsRule.WebClient wc = j.createWebClient().withThrowExceptionOnFailingStatusCode(false)) {
             final Page page = wc.goTo("apple-touch-icon.png", "image/png");
             assertThat(page.getWebResponse().getStatusCode(), is(200));
-            final List<NameValuePair> cspHeaders = page.getWebResponse().getResponseHeaders().stream().filter(p -> p.getName().startsWith(CONTENT_SECURITY_POLICY_HEADER)).collect(Collectors.toList());
+            final List<NameValuePair> cspHeaders = page.getWebResponse().getResponseHeaders().stream().filter(p -> p.getName().startsWith(CONTENT_SECURITY_POLICY_HEADER)).toList();
             assertThat(cspHeaders.size(), is(1));
             assertThat(cspHeaders.get(0).getValue(), startsWith(ContentSecurityPolicyConfiguration.DEFAULT_RULE));
         }
     }
 
     @Test
-    public void test404ErrorHeaders() throws IOException, SAXException {
+    void test404ErrorHeaders() throws Exception {
         try (JenkinsRule.WebClient wc = j.createWebClient().withThrowExceptionOnFailingStatusCode(false)) {
             final HtmlPage htmlPage = wc.goTo("thisUrlDoesNotExist");
             assertThat(htmlPage.getWebResponse().getStatusCode(), is(404));
-            final List<NameValuePair> cspHeaders = htmlPage.getWebResponse().getResponseHeaders().stream().filter(p -> p.getName().startsWith(CONTENT_SECURITY_POLICY_HEADER)).collect(Collectors.toList());
+            final List<NameValuePair> cspHeaders = htmlPage.getWebResponse().getResponseHeaders().stream().filter(p -> p.getName().startsWith(CONTENT_SECURITY_POLICY_HEADER)).toList();
             assertThat(cspHeaders.size(), is(1));
             assertThat(cspHeaders.get(0).getValue(), startsWith(ContentSecurityPolicyConfiguration.DEFAULT_RULE));
         }
@@ -65,7 +79,7 @@ public class ContentSecurityPolicyFilterTest {
 
     @SuppressRestrictedWarnings({DirectoryBrowserSupport.class})
     @Test
-    public void directoryBrowserSupportContradictsCspPluginWithReporting() throws IOException, SAXException {
+    void directoryBrowserSupportContradictsCspPluginWithReporting() throws Exception {
         try (JenkinsRule.WebClient wc = j.createWebClient()) {
             final Page page = wc.goTo("userContent/readme.txt", "text/plain");
             assertThat(page.getWebResponse().getStatusCode(), is(200));
@@ -78,7 +92,7 @@ public class ContentSecurityPolicyFilterTest {
 
     @SuppressRestrictedWarnings({DirectoryBrowserSupport.class})
     @Test
-    public void directoryBrowserSupportWinsOverCspPluginWithEnforcing() throws IOException, SAXException {
+    void directoryBrowserSupportWinsOverCspPluginWithEnforcing() throws Exception {
         ExtensionList.lookupSingleton(ContentSecurityPolicyConfiguration.class).setReportOnly(false);
         try (JenkinsRule.WebClient wc = j.createWebClient()) {
             final Page htmlPage = wc.goTo("userContent/readme.txt", "text/plain");
@@ -90,7 +104,7 @@ public class ContentSecurityPolicyFilterTest {
     }
 
     @Test
-    public void directoryBrowserSupportCustomWinsOverCspPluginWithEnforcing() throws IOException, SAXException {
+    void directoryBrowserSupportCustomWinsOverCspPluginWithEnforcing() throws Exception {
         final String customValue = "foo";
         System.setProperty(DBS_CSP_SYSTEM_PROPERTY, customValue);
         ExtensionList.lookupSingleton(ContentSecurityPolicyConfiguration.class).setReportOnly(false);
@@ -104,7 +118,7 @@ public class ContentSecurityPolicyFilterTest {
     }
 
     @Test
-    public void directoryBrowserSupportDisabledLosesToCspPluginWithEnforcing() throws IOException, SAXException {
+    void directoryBrowserSupportDisabledLosesToCspPluginWithEnforcing() throws Exception {
         System.setProperty(DBS_CSP_SYSTEM_PROPERTY, "");
         ExtensionList.lookupSingleton(ContentSecurityPolicyConfiguration.class).setReportOnly(false);
         try (JenkinsRule.WebClient wc = j.createWebClient()) {
@@ -117,7 +131,7 @@ public class ContentSecurityPolicyFilterTest {
     }
 
     @Test
-    public void resourceDomainHasNoHeaderWithReporting() throws IOException, SAXException {
+    void resourceDomainHasNoHeaderWithReporting() throws Exception {
         ResourceDomainConfiguration.get().setUrl(j.getURL().toExternalForm().replace("localhost", RRURL_HOSTNAME));
         try (JenkinsRule.WebClient wc = j.createWebClient().withRedirectEnabled(true)) {
             final Page htmlPage = wc.goTo("userContent/readme.txt", "text/plain");
@@ -128,7 +142,7 @@ public class ContentSecurityPolicyFilterTest {
     }
 
     @Test
-    public void resourceDomainHasNoHeaderWithEnforcing() throws IOException, SAXException {
+    void resourceDomainHasNoHeaderWithEnforcing() throws Exception {
         ResourceDomainConfiguration.get().setUrl(j.getURL().toExternalForm().replace("localhost", RRURL_HOSTNAME));
         ExtensionList.lookupSingleton(ContentSecurityPolicyConfiguration.class).setReportOnly(false);
         try (JenkinsRule.WebClient wc = j.createWebClient().withRedirectEnabled(true)) {
