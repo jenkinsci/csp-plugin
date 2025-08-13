@@ -1,8 +1,8 @@
 = Content Security Policy Plugin
 
-WARNING: Jenkins is currently (version 2.485) not ready for this plugin to be used to enforce Content Security Policy for all production environments.
+WARNING: While Jenkins is generally compatible with the default rules in this plugin since early 2025, many plugins are not ready for this plugin to be used to enforce Content Security Policy.
 Some features will stop working with the default rule set when _Report Only_ is unchecked.
-See https://issues.jenkins.io/browse/JENKINS-60865[JENKINS-60865] to track plugin compatibility.
+https://issues.jenkins.io/browse/JENKINS-60865[JENKINS-60865] tracks plugin compatibility.
 
 == Introduction
 
