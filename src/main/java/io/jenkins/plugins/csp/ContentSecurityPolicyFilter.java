@@ -47,7 +47,8 @@ import org.kohsuke.accmod.restrictions.suppressions.SuppressRestrictedWarnings;
 public class ContentSecurityPolicyFilter implements HttpServletFilter {
 
     static String getConfiguredRules() {
-        final String rule = ExtensionList.lookupSingleton(ContentSecurityPolicyConfiguration.class).getRule();
+        final String rule = ExtensionList.lookupSingleton(ContentSecurityPolicyConfiguration.class)
+                .getRule();
         if (rule == null) {
             return null;
         }
@@ -55,7 +56,8 @@ public class ContentSecurityPolicyFilter implements HttpServletFilter {
     }
 
     static String getHeader() {
-        final boolean reportOnly = ExtensionList.lookupSingleton(ContentSecurityPolicyConfiguration.class).isReportOnly();
+        final boolean reportOnly = ExtensionList.lookupSingleton(ContentSecurityPolicyConfiguration.class)
+                .isReportOnly();
         return reportOnly ? "Content-Security-Policy-Report-Only" : "Content-Security-Policy";
     }
 
@@ -64,8 +66,8 @@ public class ContentSecurityPolicyFilter implements HttpServletFilter {
         if (jenkins != null) {
             final String rootUrl = jenkins.getRootUrl();
             if (rootUrl != null && jenkins.hasPermission(Jenkins.READ)) {
-                return getConfiguredRules() + "; report-uri " + rootUrl + ContentSecurityPolicyRootAction.URL
-                        + "/" + context;
+                return getConfiguredRules() + "; report-uri " + rootUrl + ContentSecurityPolicyRootAction.URL + "/"
+                        + context;
             }
         }
         return getConfiguredRules();
@@ -81,9 +83,7 @@ public class ContentSecurityPolicyFilter implements HttpServletFilter {
              * context information in ContentSecurityPolicyDecorator.
              */
             String context = Context.encodeContext(
-                    "",
-                    Jenkins.getAuthentication2(),
-                    removeStart(req.getRequestURI(), req.getContextPath()));
+                    "", Jenkins.getAuthentication2(), removeStart(req.getRequestURI(), req.getContextPath()));
             rsp.setHeader(header, getValue(context));
         }
         return false;

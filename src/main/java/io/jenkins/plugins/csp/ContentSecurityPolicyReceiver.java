@@ -27,11 +27,10 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.ExtensionPoint;
 import hudson.model.User;
+import java.util.Objects;
 import net.sf.json.JSONObject;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
-
-import java.util.Objects;
 
 /**
  * Extension point for receivers of Content Security Policy reports.
@@ -61,10 +60,7 @@ public interface ContentSecurityPolicyReceiver extends ExtensionPoint {
 
         @Override
         public String toString() {
-            return "Context{" +
-                    "className='" + className + '\'' +
-                    ", viewName='" + viewName + '\'' +
-                    '}';
+            return "Context{" + "className='" + className + '\'' + ", viewName='" + viewName + '\'' + '}';
         }
 
         @Override

@@ -1,5 +1,10 @@
 package io.jenkins.plugins.csp;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import hudson.ExtensionList;
 import hudson.model.DirectoryBrowserSupport;
 import java.io.IOException;
@@ -18,11 +23,6 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.kohsuke.accmod.restrictions.suppressions.SuppressRestrictedWarnings;
 import org.xml.sax.SAXException;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.startsWith;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 public class ContentSecurityPolicyFilterTest {
     @Rule
     public JenkinsRule j = new JenkinsRule();
@@ -35,7 +35,9 @@ public class ContentSecurityPolicyFilterTest {
         try (JenkinsRule.WebClient wc = j.createWebClient()) {
             final HtmlPage htmlPage = wc.goTo("userContent/");
             assertThat(htmlPage.getWebResponse().getStatusCode(), is(200));
-            final List<NameValuePair> cspHeaders = htmlPage.getWebResponse().getResponseHeaders().stream().filter(p -> p.getName().startsWith(CONTENT_SECURITY_POLICY_HEADER)).collect(Collectors.toList());
+            final List<NameValuePair> cspHeaders = htmlPage.getWebResponse().getResponseHeaders().stream()
+                    .filter(p -> p.getName().startsWith(CONTENT_SECURITY_POLICY_HEADER))
+                    .collect(Collectors.toList());
             assertThat(cspHeaders.size(), is(1));
             assertThat(cspHeaders.get(0).getValue(), startsWith(ContentSecurityPolicyConfiguration.DEFAULT_RULE));
         }
@@ -46,7 +48,9 @@ public class ContentSecurityPolicyFilterTest {
         try (JenkinsRule.WebClient wc = j.createWebClient().withThrowExceptionOnFailingStatusCode(false)) {
             final Page page = wc.goTo("apple-touch-icon.png", "image/png");
             assertThat(page.getWebResponse().getStatusCode(), is(200));
-            final List<NameValuePair> cspHeaders = page.getWebResponse().getResponseHeaders().stream().filter(p -> p.getName().startsWith(CONTENT_SECURITY_POLICY_HEADER)).collect(Collectors.toList());
+            final List<NameValuePair> cspHeaders = page.getWebResponse().getResponseHeaders().stream()
+                    .filter(p -> p.getName().startsWith(CONTENT_SECURITY_POLICY_HEADER))
+                    .collect(Collectors.toList());
             assertThat(cspHeaders.size(), is(1));
             assertThat(cspHeaders.get(0).getValue(), startsWith(ContentSecurityPolicyConfiguration.DEFAULT_RULE));
         }
@@ -57,7 +61,9 @@ public class ContentSecurityPolicyFilterTest {
         try (JenkinsRule.WebClient wc = j.createWebClient().withThrowExceptionOnFailingStatusCode(false)) {
             final HtmlPage htmlPage = wc.goTo("thisUrlDoesNotExist");
             assertThat(htmlPage.getWebResponse().getStatusCode(), is(404));
-            final List<NameValuePair> cspHeaders = htmlPage.getWebResponse().getResponseHeaders().stream().filter(p -> p.getName().startsWith(CONTENT_SECURITY_POLICY_HEADER)).collect(Collectors.toList());
+            final List<NameValuePair> cspHeaders = htmlPage.getWebResponse().getResponseHeaders().stream()
+                    .filter(p -> p.getName().startsWith(CONTENT_SECURITY_POLICY_HEADER))
+                    .collect(Collectors.toList());
             assertThat(cspHeaders.size(), is(1));
             assertThat(cspHeaders.get(0).getValue(), startsWith(ContentSecurityPolicyConfiguration.DEFAULT_RULE));
         }
@@ -71,8 +77,11 @@ public class ContentSecurityPolicyFilterTest {
             assertThat(page.getWebResponse().getStatusCode(), is(200));
             final Map<String, String> cspHeaders = getCspResponseHeadersMap(page.getWebResponse());
             assertThat(cspHeaders.size(), is(CSP_HEADERS.size()));
-            assertThat(cspHeaders.get(CONTENT_SECURITY_POLICY_REPORT_ONLY_HEADER), startsWith(ContentSecurityPolicyConfiguration.DEFAULT_RULE));
-            assertThat(cspHeaders.get(CONTENT_SECURITY_POLICY_HEADER), equalTo(DirectoryBrowserSupport.DEFAULT_CSP_VALUE));
+            assertThat(
+                    cspHeaders.get(CONTENT_SECURITY_POLICY_REPORT_ONLY_HEADER),
+                    startsWith(ContentSecurityPolicyConfiguration.DEFAULT_RULE));
+            assertThat(
+                    cspHeaders.get(CONTENT_SECURITY_POLICY_HEADER), equalTo(DirectoryBrowserSupport.DEFAULT_CSP_VALUE));
         }
     }
 
@@ -85,7 +94,8 @@ public class ContentSecurityPolicyFilterTest {
             assertThat(htmlPage.getWebResponse().getStatusCode(), is(200));
             final Map<String, String> cspHeaders = getCspResponseHeadersMap(htmlPage.getWebResponse());
             assertThat(cspHeaders.size(), is(DBS_AND_ENFORCING_CSP_HEADERS.size()));
-            assertThat(cspHeaders.get(CONTENT_SECURITY_POLICY_HEADER), equalTo(DirectoryBrowserSupport.DEFAULT_CSP_VALUE));
+            assertThat(
+                    cspHeaders.get(CONTENT_SECURITY_POLICY_HEADER), equalTo(DirectoryBrowserSupport.DEFAULT_CSP_VALUE));
         }
     }
 
@@ -112,7 +122,9 @@ public class ContentSecurityPolicyFilterTest {
             assertThat(htmlPage.getWebResponse().getStatusCode(), is(200));
             final Map<String, String> cspHeaders = getCspResponseHeadersMap(htmlPage.getWebResponse());
             assertThat(cspHeaders.size(), is(1));
-            assertThat(cspHeaders.get(CONTENT_SECURITY_POLICY_HEADER), startsWith(ContentSecurityPolicyConfiguration.DEFAULT_RULE));
+            assertThat(
+                    cspHeaders.get(CONTENT_SECURITY_POLICY_HEADER),
+                    startsWith(ContentSecurityPolicyConfiguration.DEFAULT_RULE));
         }
     }
 
@@ -140,17 +152,13 @@ public class ContentSecurityPolicyFilterTest {
     }
 
     private static Map<String, String> getResponseHeadersMap(WebResponse response) {
-        return response
-                .getResponseHeaders()
-                .stream()
+        return response.getResponseHeaders().stream()
                 .map(pair -> Map.entry(pair.getName(), pair.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private static Map<String, String> getCspResponseHeadersMap(WebResponse response) {
-        return getResponseHeadersMap(response)
-                .entrySet()
-                .stream()
+        return getResponseHeadersMap(response).entrySet().stream()
                 .filter(entry -> CSP_HEADERS.contains(entry.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
@@ -162,6 +170,11 @@ public class ContentSecurityPolicyFilterTest {
     private static final String CONTENT_SECURITY_POLICY_REPORT_ONLY_HEADER = "Content-Security-Policy-Report-Only";
     private static final String X_WEBKIT_CSP_HEADER = "X-WebKit-CSP";
     private static final String X_CONTENT_SECURITY_POLICY_HEADER = "X-Content-Security-Policy";
-    private static final List<String> CSP_HEADERS = List.of(CONTENT_SECURITY_POLICY_HEADER, X_WEBKIT_CSP_HEADER, X_CONTENT_SECURITY_POLICY_HEADER, CONTENT_SECURITY_POLICY_REPORT_ONLY_HEADER);
-    private static final List<String> DBS_AND_ENFORCING_CSP_HEADERS = List.of(CONTENT_SECURITY_POLICY_HEADER, X_WEBKIT_CSP_HEADER, X_CONTENT_SECURITY_POLICY_HEADER);
+    private static final List<String> CSP_HEADERS = List.of(
+            CONTENT_SECURITY_POLICY_HEADER,
+            X_WEBKIT_CSP_HEADER,
+            X_CONTENT_SECURITY_POLICY_HEADER,
+            CONTENT_SECURITY_POLICY_REPORT_ONLY_HEADER);
+    private static final List<String> DBS_AND_ENFORCING_CSP_HEADERS =
+            List.of(CONTENT_SECURITY_POLICY_HEADER, X_WEBKIT_CSP_HEADER, X_CONTENT_SECURITY_POLICY_HEADER);
 }

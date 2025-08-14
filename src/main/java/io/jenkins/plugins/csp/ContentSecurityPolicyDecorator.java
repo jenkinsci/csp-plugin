@@ -25,14 +25,13 @@ package io.jenkins.plugins.csp;
 
 import hudson.Extension;
 import hudson.model.PageDecorator;
+import java.util.List;
 import jenkins.model.Jenkins;
 import org.jenkinsci.Symbol;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.Stapler;
-
-import java.util.List;
 
 /**
  * Inject the CSP header based on {@link ContentSecurityPolicyConfiguration} into Jenkins views.
