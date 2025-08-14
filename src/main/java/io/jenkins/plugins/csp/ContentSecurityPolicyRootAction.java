@@ -36,7 +36,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.Symbol;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -75,7 +74,8 @@ public class ContentSecurityPolicyRootAction extends InvisibleAction implements 
     @SuppressWarnings("lgtm[jenkins/no-permission-check]")
     @POST
     public HttpResponse doDynamic(StaplerRequest2 req) {
-        String restOfPath = StringUtils.removeStart(req.getRestOfPath(), "/");
+        final String requestRestOfPath = req.getRestOfPath();
+        String restOfPath = requestRestOfPath.startsWith("/") ? requestRestOfPath.substring(1) : requestRestOfPath;
 
         try {
             final Context.DecodedContext context = Context.decodeContext(restOfPath);
