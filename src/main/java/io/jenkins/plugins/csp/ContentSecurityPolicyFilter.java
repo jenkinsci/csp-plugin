@@ -32,7 +32,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jenkins.model.Jenkins;
 import jenkins.security.ResourceDomainConfiguration;
 import jenkins.util.HttpServletFilter;
-import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.accmod.restrictions.suppressions.SuppressRestrictedWarnings;
@@ -52,7 +51,7 @@ public class ContentSecurityPolicyFilter implements HttpServletFilter {
         if (rule == null) {
             return null;
         }
-        return StringUtils.removeEnd(rule.trim(), ";");
+        return removeEnd(rule.trim(), ";");
     }
 
     static String getHeader() {
@@ -84,9 +83,23 @@ public class ContentSecurityPolicyFilter implements HttpServletFilter {
             String context = Context.encodeContext(
                     "",
                     Jenkins.getAuthentication2(),
-                    StringUtils.removeStart(req.getRequestURI(), req.getContextPath()));
+                    removeStart(req.getRequestURI(), req.getContextPath()));
             rsp.setHeader(header, getValue(context));
         }
         return false;
+    }
+
+    private static String removeEnd(@NonNull String haystack, @NonNull String needle) {
+        if (haystack.endsWith(needle)) {
+            return haystack.substring(0, haystack.length() - needle.length());
+        }
+        return haystack;
+    }
+
+    private static String removeStart(@NonNull String haystack, @NonNull String needle) {
+        if (haystack.startsWith(needle)) {
+            return haystack.substring(needle.length());
+        }
+        return haystack;
     }
 }
