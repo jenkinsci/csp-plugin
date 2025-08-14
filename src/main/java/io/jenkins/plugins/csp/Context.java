@@ -49,35 +49,46 @@ public class Context {
             @CheckForNull final Authentication authentication,
             @NonNull final String restOfPath) {
         final String userId = authentication == null ? "" : authentication.getName();
-        final String encodedContext = toBase64(userId) + ":" + toBase64(ancestorName.toString()) + ":" + toBase64(restOfPath);
-        final String mac = Base64.getUrlEncoder().encodeToString(KEY.mac(encodedContext.getBytes(StandardCharsets.UTF_8)));
+        final String encodedContext =
+                toBase64(userId) + ":" + toBase64(ancestorName.toString()) + ":" + toBase64(restOfPath);
+        final String mac =
+                Base64.getUrlEncoder().encodeToString(KEY.mac(encodedContext.getBytes(StandardCharsets.UTF_8)));
         return mac + ":" + encodedContext;
     }
 
     public static DecodedContext decodeContext(final String rawContext) {
         String[] macAndContext = rawContext.split(":", 2);
         if (macAndContext.length != 2) {
-            throw new IllegalArgumentException("Unexpected number of split entries, expected 2, got " + macAndContext.length);
+            throw new IllegalArgumentException(
+                    "Unexpected number of split entries, expected 2, got " + macAndContext.length);
         }
         String mac = macAndContext[0];
         String encodedContext = macAndContext[1];
 
-        if (!KEY.checkMac(encodedContext.getBytes(StandardCharsets.UTF_8), Base64.getUrlDecoder().decode(mac))) {
+        if (!KEY.checkMac(
+                encodedContext.getBytes(StandardCharsets.UTF_8),
+                Base64.getUrlDecoder().decode(mac))) {
             throw new IllegalArgumentException("Mac check failed for " + encodedContext);
         }
 
         String[] encodedContextParts = encodedContext.split(":", 3);
         if (encodedContextParts.length != 3) {
-            throw new IllegalArgumentException("Unexpected number of split entries, expected 3, got " + macAndContext.length);
+            throw new IllegalArgumentException(
+                    "Unexpected number of split entries, expected 3, got " + macAndContext.length);
         }
-        return new DecodedContext(fromBase64(encodedContextParts[0]), fromBase64(encodedContextParts[1]), fromBase64(encodedContextParts[2]));
+        return new DecodedContext(
+                fromBase64(encodedContextParts[0]),
+                fromBase64(encodedContextParts[1]),
+                fromBase64(encodedContextParts[2]));
     }
 
     public static class DecodedContext {
         public final String userId;
         public final String contextClassName;
         public final String restOfPath;
-        public DecodedContext(@CheckForNull String userId, @NonNull String contextClassName, @NonNull String restOfPath) {
+
+        public DecodedContext(
+                @CheckForNull String userId, @NonNull String contextClassName, @NonNull String restOfPath) {
             this.userId = Util.fixEmpty(userId);
             this.contextClassName = contextClassName;
             this.restOfPath = restOfPath;
