@@ -1,30 +1,28 @@
 = Content Security Policy Plugin
 
-WARNING: Jenkins is currently (version 2.390) not ready for this plugin to be used to enforce Content-Security-Policy for most resources in production environments.
-Many features, both in core and plugins, will stop working with the default rule set.
-At this time, this plugin is a utility for Jenkins developers, not for Jenkins administrators.
+WARNING: While Jenkins is generally compatible with the default rules in this plugin since early 2025, many plugins are not ready for this plugin to be used to enforce Content Security Policy.
+Some features will stop working with the default rule set when _Report Only_ is unchecked.
+https://issues.jenkins.io/browse/JENKINS-60865[JENKINS-60865] tracks plugin compatibility.
 
 == Introduction
 
-This plugin implements Content-Security-Policy protection for the classic Jenkins UI.
+This plugin implements Content Security Policy protection for Jenkins.
 
 == Getting started
 
-Install this plugin to have basic reporting of Content-Security-Policy violations in Jenkins:
+Install this plugin to have basic reporting of Content Security Policy violations in Jenkins:
 A new link _Content Security Policy Reports_ on the _Manage Jenkins_ page allows administrators to review reported policy violations.
 
 Rules can be configured on the _Configure Global Security_ configuration screen.
+By default, Content Security Policy violations are reported but not enforced.
+To enforce Content Security Policy, uncheck _Report Only_ on the _Configure Global Security_ configuration screen.
 
-This plugin serves Content-Security-Policy headers for all HTTP responses, including user-generated content (files in workspaces, archived artifacts, etc.), unless those are served from the https://www.jenkins.io/doc/book/security/user-content/#resource-root-url[Resource Root URL].
-This interacts with the https://www.jenkins.io/doc/book/security/configuring-content-security-policy/[default Content-Security-Policy headers set by Jenkins since 1.641 and LTS 1.625.3 for these resources] as follows:
+This plugin serves Content Security Policy headers for all HTTP responses, including user-generated content (files in workspaces, archived artifacts, etc.), unless those are served from the https://www.jenkins.io/doc/book/security/user-content/#resource-root-url[Resource Root URL].
+This interacts with the https://www.jenkins.io/doc/book/security/configuring-content-security-policy/[default Content Security Policy headers set by Jenkins since 1.641 and LTS 1.625.3 for these resources] as follows:
 
 * If this plugin is configured to only report violations (the default), both enforcing (from Jenkins) and non-enforcing (from this plugin) headers will be set.
-* If this plugin is configured to enforce rules, Jenkins's Content-Security-Policy headers for these resources take precedence over this plugin's.
+* If this plugin is configured to enforce rules, Jenkins's `Content-Security-Policy` header for these resources takes precedence over this plugin's.
 * If the `hudson.model.DirectoryBrowserSupport.CSP` Java system property is set to the empty string (i.e., disable default protection from Jenkins), this plugin will still set the enforcing header if configured to do so.
-
-== Issues
-
-Report issues and enhancements in the https://www.jenkins.io/participate/report-issue/redirect/#28623[Jenkins issue tracker].
 
 == Contributing
 

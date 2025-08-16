@@ -23,7 +23,7 @@
  */
 package io.jenkins.plugins.csp;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.ExtensionList;
 import jakarta.servlet.Filter;
@@ -32,7 +32,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jenkins.model.Jenkins;
 import jenkins.security.ResourceDomainConfiguration;
 import jenkins.util.HttpServletFilter;
-import org.apache.commons.lang.StringUtils;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.accmod.restrictions.suppressions.SuppressRestrictedWarnings;
@@ -40,35 +39,35 @@ import org.kohsuke.accmod.restrictions.suppressions.SuppressRestrictedWarnings;
 /**
  * Inject the CSP header based on {@link ContentSecurityPolicyConfiguration} into Jenkins views.
  * The reporting URL is implemented by {@link ContentSecurityPolicyRootAction}.
- * At the {@link Filter} level, {@link Context} is not available.
- * We later attempt to add {@link Context} information in {@link ContentSecurityPolicyDecorator}.
+ * At the {@link Filter} level, Stapler {@link Context} information is not available.
+ * We later attempt to add Stapler {@link Context} information in {@link ContentSecurityPolicyDecorator}.
  */
 @Extension
 @Restricted(NoExternalUse.class)
 public class ContentSecurityPolicyFilter implements HttpServletFilter {
 
     static String getConfiguredRules() {
-        final String rule = ExtensionList.lookupSingleton(ContentSecurityPolicyConfiguration.class).getRule();
+        final String rule = ExtensionList.lookupSingleton(ContentSecurityPolicyConfiguration.class)
+                .getRule();
         if (rule == null) {
             return null;
         }
-        return StringUtils.removeEnd(rule.trim(), ";");
+        return removeEnd(rule.trim(), ";");
     }
 
     static String getHeader() {
-        final boolean reportOnly = ExtensionList.lookupSingleton(ContentSecurityPolicyConfiguration.class).isReportOnly();
+        final boolean reportOnly = ExtensionList.lookupSingleton(ContentSecurityPolicyConfiguration.class)
+                .isReportOnly();
         return reportOnly ? "Content-Security-Policy-Report-Only" : "Content-Security-Policy";
     }
 
-    static String getValue(@CheckForNull String context) {
-        if (context != null) {
-            final Jenkins jenkins = Jenkins.getInstanceOrNull();
-            if (jenkins != null) {
-                final String rootUrl = jenkins.getRootUrl();
-                if (rootUrl != null && jenkins.hasPermission(Jenkins.READ)) {
-                    return getConfiguredRules() + "; report-uri " + rootUrl + "/" + ContentSecurityPolicyRootAction.URL
-                            + "/" + context;
-                }
+    static String getValue(@NonNull String context) {
+        final Jenkins jenkins = Jenkins.getInstanceOrNull();
+        if (jenkins != null) {
+            final String rootUrl = jenkins.getRootUrl();
+            if (rootUrl != null && jenkins.hasPermission(Jenkins.READ)) {
+                return getConfiguredRules() + "; report-uri " + rootUrl + ContentSecurityPolicyRootAction.URL + "/"
+                        + context;
             }
         }
         return getConfiguredRules();
@@ -80,15 +79,27 @@ public class ContentSecurityPolicyFilter implements HttpServletFilter {
         final String header = getHeader();
         if (rsp.getHeader(header) == null && !ResourceDomainConfiguration.isResourceRequest(req)) {
             /*
-             * Set the header without a context at this low layer. We later attempt to add context information in
-             * ContentSecurityPolicyDecorator.
+             * Set the header without Stapler context information at this low layer. We later attempt to add Stapler
+             * context information in ContentSecurityPolicyDecorator.
              */
             String context = Context.encodeContext(
-                    ContentSecurityPolicyFilter.class.getName(),
-                    Jenkins.getAuthentication2(),
-                    StringUtils.removeStart(req.getRequestURI(), req.getContextPath()));
+                    "", Jenkins.getAuthentication2(), removeStart(req.getRequestURI(), req.getContextPath()));
             rsp.setHeader(header, getValue(context));
         }
         return false;
+    }
+
+    private static String removeEnd(@NonNull String haystack, @NonNull String needle) {
+        if (haystack.endsWith(needle)) {
+            return haystack.substring(0, haystack.length() - needle.length());
+        }
+        return haystack;
+    }
+
+    private static String removeStart(@NonNull String haystack, @NonNull String needle) {
+        if (haystack.startsWith(needle)) {
+            return haystack.substring(needle.length());
+        }
+        return haystack;
     }
 }

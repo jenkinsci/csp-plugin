@@ -34,17 +34,18 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundSetter;
 
 /**
- * Customize the Content-Security-Policy rules.
+ * Customize the Content Security Policy rules.
  */
 @Extension
 @Restricted(NoExternalUse.class)
 @Symbol("contentSecurityPolicyConfiguration")
 public class ContentSecurityPolicyConfiguration extends GlobalConfiguration implements PersistentDescriptor {
 
-    public static final String DEFAULT_RULE = "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: ; script-src 'self' 'report-sample' usage.jenkins.io;";
-            // Hashes for known static core scripts could be added to limit spam:
-            // 'sha256-z4DDyDYJv6wQlqKsZeAc/6+Aanuong2YoqhblTEpsME=' screenResolution
-            // 'sha256-z/buOmKIvbplzl42NzWxG3io200i1Ln7VCsKlSDq2qs=' var amContainer
+    public static final String DEFAULT_RULE =
+            "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: ; script-src 'self' 'report-sample' usage.jenkins.io;";
+    // Hashes for known static core scripts could be added to limit spam:
+    // 'sha256-z4DDyDYJv6wQlqKsZeAc/6+Aanuong2YoqhblTEpsME=' screenResolution
+    // 'sha256-z/buOmKIvbplzl42NzWxG3io200i1Ln7VCsKlSDq2qs=' var amContainer
 
     private boolean reportOnly = true;
 

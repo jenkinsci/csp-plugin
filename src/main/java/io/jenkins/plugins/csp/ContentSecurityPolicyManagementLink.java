@@ -32,7 +32,16 @@ import hudson.PluginWrapper;
 import hudson.model.ManagementLink;
 import hudson.model.PeriodicWork;
 import hudson.model.User;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jenkins.model.Jenkins;
 import jenkins.util.SystemProperties;
 import net.jcip.annotations.GuardedBy;
@@ -45,24 +54,17 @@ import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.interceptor.RequirePOST;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 @Extension
 @Restricted(NoExternalUse.class)
 @Symbol("contentSecurityPolicyManagementLink")
-public class ContentSecurityPolicyManagementLink extends ManagementLink implements StaplerProxy, ContentSecurityPolicyReceiver {
+public class ContentSecurityPolicyManagementLink extends ManagementLink
+        implements StaplerProxy, ContentSecurityPolicyReceiver {
     public static final Logger LOGGER = Logger.getLogger(ManagementLink.class.getName());
 
-    public static final int ROTATE_PERIOD_HOURS = SystemProperties.getInteger(ContentSecurityPolicyManagementLink.class.getName() + ".ROTATE_PERIOD_HOURS", 6);
-    private static /* non-final for Groovy */ int ROTATE_AFTER_HOURS = SystemProperties.getInteger(ContentSecurityPolicyManagementLink.class.getName() + ".ROTATE_AFTER_HOURS", 24);
+    public static final int ROTATE_PERIOD_HOURS = SystemProperties.getInteger(
+            ContentSecurityPolicyManagementLink.class.getName() + ".ROTATE_PERIOD_HOURS", 6);
+    private static /* non-final for Groovy */ int ROTATE_AFTER_HOURS = SystemProperties.getInteger(
+            ContentSecurityPolicyManagementLink.class.getName() + ".ROTATE_AFTER_HOURS", 24);
 
     private final List<Record> records = new LinkedList<>();
 
@@ -86,7 +88,7 @@ public class ContentSecurityPolicyManagementLink extends ManagementLink implemen
 
     @Override
     public String getDescription() {
-        return "Review reported Content-Security-Policy violations."; // TODO i18n
+        return "Review reported Content Security Policy violations."; // TODO i18n
     }
 
     @NonNull
@@ -107,7 +109,14 @@ public class ContentSecurityPolicyManagementLink extends ManagementLink implemen
         final String violatedDirective = cspReport.optString("violated-directive", "<UNKNOWN>");
         final String blockedUri = cspReport.optString("blocked-uri", "<UNKNOWN>");
         final String scriptSample = cspReport.optString("script-sample", "<UNKNOWN>");
-        Record record = new Record(viewContext.getClassName(), viewContext.getViewName(), violatedDirective, blockedUri, scriptSample, Instant.now(), user == null ? null : user.getId());
+        Record record = new Record(
+                viewContext.getClassName(),
+                viewContext.getViewName(),
+                violatedDirective,
+                blockedUri,
+                scriptSample,
+                Instant.now(),
+                user == null ? null : user.getId());
         synchronized (records) {
             records.add(record);
         }
@@ -149,7 +158,8 @@ public class ContentSecurityPolicyManagementLink extends ManagementLink implemen
 
         @Override
         protected void doRun() throws Exception {
-            ExtensionList.lookupSingleton(ContentSecurityPolicyManagementLink.class).rotate();
+            ExtensionList.lookupSingleton(ContentSecurityPolicyManagementLink.class)
+                    .rotate();
         }
     }
 
@@ -162,7 +172,14 @@ public class ContentSecurityPolicyManagementLink extends ManagementLink implemen
         private final Instant time;
         private final String username;
 
-        public Record(String contextClassName, String contextViewName, String violatedDirective, String blockedUri, String scriptSample, Instant time, String username) {
+        public Record(
+                String contextClassName,
+                String contextViewName,
+                String violatedDirective,
+                String blockedUri,
+                String scriptSample,
+                Instant time,
+                String username) {
             this.violatedDirective = violatedDirective;
             this.contextClassName = contextClassName;
             this.contextViewName = contextViewName;
@@ -205,6 +222,9 @@ public class ContentSecurityPolicyManagementLink extends ManagementLink implemen
         }
 
         public PluginWrapper getContextPlugin() {
+            if (contextClassName.isEmpty()) {
+                return null;
+            }
             try {
                 final PluginManager pluginManager = Jenkins.get().getPluginManager();
                 return pluginManager.whichPlugin(pluginManager.uberClassLoader.loadClass(this.contextClassName));

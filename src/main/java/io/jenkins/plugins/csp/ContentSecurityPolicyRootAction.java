@@ -34,21 +34,19 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.Symbol;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest2;
-import org.springframework.security.core.Authentication;
-
-import java.io.IOException;
-import java.io.Reader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.kohsuke.stapler.verb.POST;
+import org.springframework.security.core.Authentication;
 
 /**
  * Reporting endpoint for CSP violations.
@@ -75,17 +73,22 @@ public class ContentSecurityPolicyRootAction extends InvisibleAction implements 
     @SuppressWarnings("lgtm[jenkins/no-permission-check]")
     @POST
     public HttpResponse doDynamic(StaplerRequest2 req) {
-        String restOfPath = StringUtils.removeStart(req.getRestOfPath(), "/");
+        final String requestRestOfPath = req.getRestOfPath();
+        String restOfPath = requestRestOfPath.startsWith("/") ? requestRestOfPath.substring(1) : requestRestOfPath;
 
         try {
             final Context.DecodedContext context = Context.decodeContext(restOfPath);
 
-            ContentSecurityPolicyReceiver.ViewContext viewContext = new ContentSecurityPolicyReceiver.ViewContext(context.contextClassName, context.restOfPath);
+            ContentSecurityPolicyReceiver.ViewContext viewContext =
+                    new ContentSecurityPolicyReceiver.ViewContext(context.contextClassName, context.restOfPath);
             try (Reader reader = req.getReader()) {
-                String report = IOUtils.toString(reader); // TODO Limit max length to 1MB or so even though at this point we know the user is legitimate
+                String report = IOUtils.toString(
+                        reader); // TODO Limit max length to 1MB or so even though at this point we know the user is
+                // legitimate
                 LOGGER.log(Level.FINE, () -> viewContext + " " + report);
                 final JSONObject jsonObject = JSONObject.fromObject(report);
-                for (ContentSecurityPolicyReceiver receiver : ExtensionList.lookup(ContentSecurityPolicyReceiver.class)) {
+                for (ContentSecurityPolicyReceiver receiver :
+                        ExtensionList.lookup(ContentSecurityPolicyReceiver.class)) {
                     try {
                         final User user = context.userId == null ? null : User.getById(context.userId, false);
                         receiver.report(viewContext, user, jsonObject);
@@ -98,7 +101,9 @@ public class ContentSecurityPolicyRootAction extends InvisibleAction implements 
             }
             return HttpResponses.ok();
         } catch (RuntimeException ex) {
-            LOGGER.log(Level.FINE, "Unexpected rest of path failed to decode: " + restOfPath + " with exception: " + ex.getMessage());
+            LOGGER.log(
+                    Level.FINE,
+                    "Unexpected rest of path failed to decode: " + restOfPath + " with exception: " + ex.getMessage());
             return HttpResponses.ok();
         }
     }
@@ -106,7 +111,8 @@ public class ContentSecurityPolicyRootAction extends InvisibleAction implements 
     @Extension
     public static class CrumbExclusionImpl extends CrumbExclusion {
         @Override
-        public boolean process(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        public boolean process(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+                throws IOException, ServletException {
             String pathInfo = request.getPathInfo();
             if (pathInfo != null && pathInfo.startsWith("/" + URL + "/")) {
                 chain.doFilter(request, response);
