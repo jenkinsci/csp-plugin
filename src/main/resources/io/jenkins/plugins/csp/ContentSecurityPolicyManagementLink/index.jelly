@@ -97,7 +97,7 @@ THE SOFTWARE.
 
                 </j:when>
                 <j:otherwise>
-                    <l:notice title="${%No reports}" icon="symbol-checkmark-done-outline plugin-ionicons-api" />
+                    <l:notice title="${%No reports}" icon="symbol-check" />
                 </j:otherwise>
             </j:choose>
             <j:if test="${it.records.size() > 0}">
