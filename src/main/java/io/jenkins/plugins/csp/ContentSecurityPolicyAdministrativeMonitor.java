@@ -43,7 +43,9 @@ public class ContentSecurityPolicyAdministrativeMonitor extends AdministrativeMo
                 ExtensionList.lookupSingleton(ContentSecurityPolicyManagementLink.class);
         return configuration.isReportOnly()
                 && managementLink.getRecords().isEmpty()
-                && Duration.between(managementLink.getStart(), Instant.now()).compareTo(Duration.ofHours(ContentSecurityPolicyManagementLink.ROTATE_PERIOD_HOURS)) > 0;
+                && Duration.between(managementLink.getStart(), Instant.now())
+                                .compareTo(Duration.ofHours(ContentSecurityPolicyManagementLink.ROTATE_PERIOD_HOURS))
+                        > 0;
     }
 
     @Override
