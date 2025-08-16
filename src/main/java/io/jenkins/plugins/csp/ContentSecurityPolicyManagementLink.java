@@ -44,6 +44,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import jenkins.model.Jenkins;
 import jenkins.util.SystemProperties;
+import net.jcip.annotations.GuardedBy;
 import net.sf.json.JSONObject;
 import org.jenkinsci.Symbol;
 import org.kohsuke.accmod.Restricted;
@@ -66,6 +67,9 @@ public class ContentSecurityPolicyManagementLink extends ManagementLink
             ContentSecurityPolicyManagementLink.class.getName() + ".ROTATE_AFTER_HOURS", 24);
 
     private final List<Record> records = new LinkedList<>();
+
+    @GuardedBy("records")
+    private Instant start = Instant.now();
 
     @Override
     public String getIconFileName() {
@@ -124,10 +128,17 @@ public class ContentSecurityPolicyManagementLink extends ManagementLink
         }
     }
 
+    public Instant getStart() {
+        synchronized (this.records) {
+            return start;
+        }
+    }
+
     @RequirePOST
     public HttpResponse doClear() {
         synchronized (this.records) {
             this.records.clear();
+            this.start = Instant.now();
         }
         return HttpResponses.forwardToPreviousPage();
     }
