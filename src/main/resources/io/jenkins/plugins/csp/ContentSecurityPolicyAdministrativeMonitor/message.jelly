@@ -4,19 +4,16 @@
     <form method="post" action="${rootURL}/${it.url}/act" name="${it.id}">
       <l:isAdmin>
         <j:choose>
-          <j:when test="${it.enableReportOnly}">
-            <f:submit name="toggle" value="${%Report Only}"/>
-          </j:when>
-          <j:otherwise>
+          <j:if test="${it.disableReportOnly}">
             <f:submit name="toggle" value="${%Enforce CSP}"/>
-          </j:otherwise>
+          </j:if>
         </j:choose>
         <f:submit name="dismiss" value="${%Dismiss}"/>
       </l:isAdmin>
     </form>
     <j:choose>
       <j:when test="${it.enableReportOnly}">
-        <div>${%enableReportOnly}</div>
+        <div>${%enableReportOnly(rootURL)}</div>
       </j:when>
       <j:otherwise>
         <div>${%disableReportOnly}</div>

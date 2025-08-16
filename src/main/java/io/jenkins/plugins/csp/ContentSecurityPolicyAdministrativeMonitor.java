@@ -61,7 +61,7 @@ public class ContentSecurityPolicyAdministrativeMonitor extends AdministrativeMo
         } else {
             ContentSecurityPolicyConfiguration configuration =
                     ExtensionList.lookupSingleton(ContentSecurityPolicyConfiguration.class);
-            configuration.setReportOnly(!configuration.isReportOnly());
+            configuration.setReportOnly(false);
         }
         return HttpResponses.forwardToPreviousPage();
     }
