@@ -24,6 +24,13 @@ This interacts with the https://www.jenkins.io/doc/book/security/configuring-con
 * If this plugin is configured to enforce rules, Jenkins's `Content-Security-Policy` header for these resources takes precedence over this plugin's.
 * If the `hudson.model.DirectoryBrowserSupport.CSP` Java system property is set to the empty string (i.e., disable default protection from Jenkins), this plugin will still set the enforcing header if configured to do so.
 
+== Known false positive findings
+
+Some browser extensions create Content Security Policy violations:
+
+* An inline JavaScript block starting with `function setupDetection` is likely from AdBlock Plus.
+* A `media-source data:` violation (no snippet) could be created by NoScript.
+
 == Contributing
 
 Refer to our https://github.com/jenkinsci/.github/blob/master/CONTRIBUTING.md[contribution guidelines].
