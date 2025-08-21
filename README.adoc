@@ -29,7 +29,7 @@ This interacts with the https://www.jenkins.io/doc/book/security/configuring-con
 Some browser extensions create Content Security Policy violations:
 
 * An inline JavaScript block starting with `function setupDetection` is likely from AdBlock Plus.
-* A `media-source data:` violation (no snippet) could be created by NoScript.
+* A `media-src:` `data:` violation (no snippet) could be created by NoScript.
 
 == Contributing
 
