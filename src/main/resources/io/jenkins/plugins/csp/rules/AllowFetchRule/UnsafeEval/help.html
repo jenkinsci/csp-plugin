@@ -1,0 +1,13 @@
+<div>
+    <p>
+        Allow <code>eval()</code> and similar functions that execute strings as code (e.g., <code>new Function()</code>, <code>setTimeout</code> with strings).
+    </p>
+    <p>
+        This is needed when plugins use legacy JavaScript that dynamically evaluates code strings.
+        Modern plugins should avoid this by using direct function calls or parsed data instead.
+    </p>
+    <p>
+        <strong>Allowing <code>'unsafe-eval'</code> significantly weakens Content Security Policy protections and should be avoided when possible.</strong>
+        It can be exploited by attackers if they control strings passed to <code>eval()</code> or similar functions.
+    </p>
+</div>

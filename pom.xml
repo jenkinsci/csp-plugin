@@ -30,13 +30,16 @@
   </scm>
 
   <properties>
-    <revision>1</revision>
+    <revision>2</revision>
     <changelist>999999-SNAPSHOT</changelist>
-    <jenkins.baseline>2.479</jenkins.baseline>
-    <jenkins.version>${jenkins.baseline}.3</jenkins.version>
+    <jenkins.baseline>2.528</jenkins.baseline>
+    <jenkins.version>2.535-SNAPSHOT</jenkins.version>
     <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
     <spotless.check.skip>false</spotless.check.skip>
+    <!-- More targeted @SuppressRestrictedWarnings(Beta.class) did not work -->
+    <useBeta>true</useBeta>
     <ban-junit4-imports.skip>false</ban-junit4-imports.skip>
+    <hpi.compatibleSinceVersion>2.0</hpi.compatibleSinceVersion>
   </properties>
 
   <dependencies>

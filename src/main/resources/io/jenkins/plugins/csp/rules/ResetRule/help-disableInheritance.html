@@ -1,0 +1,21 @@
+<div>
+    <p>
+        Check this box if you want to completely reset the directive to <code>'none'</code> without inheriting any
+        values from other directives.
+    </p>
+    <p>
+        Otherwise, if a fetch directive is unspecified, the web browser will check certain other directives for the effective value.
+        For example, if <code>script-src-elem</code> is unspecified, the browser will use <code>script-src</code> instead.
+        If that is also unspecified, the browser will use <code>default-src</code> instead.
+    </p>
+    <p>
+        Jenkins's internal model of Content Security Policy implements similar behavior, in that specifically allowing a
+        scheme, domain or other value for a directive will apply <em>in addition</em> to what would be the fallback value.
+        For example, Jenkins by default defines <code>script-src</code> but not <code>script-src-elem</code>.
+        If an administrator specifies a value to be added to <code>script-src-elem</code>, Jenkins will apply that
+        <em>in addition</em> to the value for <code>script-src</code>.
+    </p>
+    <p>
+        Checking this box disables this behavior.
+    </p>
+</div>

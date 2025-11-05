@@ -2,7 +2,7 @@
 <!--
 The MIT License
 
-Copyright 2021 Daniel Beck
+Copyright 2025 CloudBees, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
-    <j:invokeStatic className="io.jenkins.plugins.csp.ContentSecurityPolicyDecorator" method="setHeader"/>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+    <f:entry title="${%Fetch Directive}" field="directive">
+        <f:select />
+    </f:entry>
+    <f:dropdownDescriptorSelector title="Value" field="allow" />
 </j:jelly>

@@ -1,0 +1,19 @@
+<div>
+    <p>
+        Specify a domain to allow as a source for the selected directive.
+        This can be a fully qualified domain name, optionally with a scheme and/or port.
+    </p>
+    <p>
+        Valid formats include:
+    </p>
+    <ul>
+        <li><code>example.com</code> - Allow the domain (matches both HTTP and HTTPS)</li>
+        <li><code>https://example.com</code> - Allow only HTTPS from the domain</li>
+        <li><code>example.com:8080</code> - Allow the domain on a specific port</li>
+        <li><code>*.example.com</code> - Allow all subdomains using a wildcard</li>
+        <li><code>https://*.example.com</code> - Allow all subdomains over HTTPS only</li>
+    </ul>
+    <p>
+        Note that wildcards can only be used as the leftmost subdomain (e.g., <code>*.example.com</code> is valid, but <code>foo.*.example.com</code> is not).
+    </p>
+</div>

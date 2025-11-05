@@ -43,6 +43,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jenkins.model.Jenkins;
+import jenkins.security.csp.CspReceiver;
 import jenkins.util.SystemProperties;
 import net.jcip.annotations.GuardedBy;
 import net.sf.json.JSONObject;
@@ -57,9 +58,8 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
 @Extension
 @Restricted(NoExternalUse.class)
 @Symbol("contentSecurityPolicyManagementLink")
-public class ContentSecurityPolicyManagementLink extends ManagementLink
-        implements StaplerProxy, ContentSecurityPolicyReceiver {
-    public static final Logger LOGGER = Logger.getLogger(ManagementLink.class.getName());
+public class ContentSecurityPolicyManagementLink extends ManagementLink implements StaplerProxy, CspReceiver {
+    public static final Logger LOGGER = Logger.getLogger(ContentSecurityPolicyManagementLink.class.getName());
 
     public static final int ROTATE_PERIOD_HOURS = SystemProperties.getInteger(
             ContentSecurityPolicyManagementLink.class.getName() + ".ROTATE_PERIOD_HOURS", 6);
@@ -110,8 +110,8 @@ public class ContentSecurityPolicyManagementLink extends ManagementLink
         final String blockedUri = cspReport.optString("blocked-uri", "<UNKNOWN>");
         final String scriptSample = cspReport.optString("script-sample", "<UNKNOWN>");
         Record record = new Record(
-                viewContext.getClassName(),
-                viewContext.getViewName(),
+                viewContext.className(),
+                viewContext.viewName(),
                 violatedDirective,
                 blockedUri,
                 scriptSample,

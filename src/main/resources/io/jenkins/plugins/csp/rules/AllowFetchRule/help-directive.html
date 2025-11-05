@@ -1,0 +1,13 @@
+<div>
+    Choose the directive to relax the rules for. Common choices are the following:
+    <ul>
+        <li><strong><code>img-src</code></strong> controls where to load images from, which can be other domains, or inline (e.g., <code>data:</code> scheme) definitions.</li>
+        <li><strong><code>script-src</code></strong> controls sources for scripts. This may need to be relaxed to allow plugins not compatible with Content Security Policy restrictions to work. <strong>Relaxing the rules for this directive may be very unsafe.</strong></li>
+        <li><strong><code>style-src</code></strong> controls sources for stylesheets. Some plugins may require additional domains <!--or inline styles -->to render correctly.</li>
+        <li><strong><code>connect-src</code></strong> controls URLs that can be loaded via AJAX, WebSockets, or EventSource. This may need to be relaxed if plugins need to connect to external APIs or services.</li>
+        <li><strong><code>font-src</code></strong> controls sources for web fonts. This may need to be relaxed if plugins use fonts from CDNs or other external sources.</li>
+        <li><strong><code>media-src</code></strong> controls sources for audio and video elements.</li>
+        <li><strong><code>frame-src</code></strong> controls sources for frames and iframes. This may need to be relaxed if plugins embed external content.</li>
+        <li><strong><code>default-src</code></strong> serves as a fallback for other fetch directives. Changing this affects all other directives, unless they've specifically been set to not inherit.</li>
+    </ul>
+</div>

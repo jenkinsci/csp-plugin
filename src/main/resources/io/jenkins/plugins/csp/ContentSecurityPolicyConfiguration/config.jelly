@@ -25,11 +25,16 @@ THE SOFTWARE.
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
     <f:section title="${%Content Security Policy}">
-        <f:entry title="${%Report Only}" field="reportOnly">
-            <f:checkbox />
-        </f:entry>
-        <f:entry title="${%Rule}" field="rule">
-            <f:textbox checkMessage="post" />
-        </f:entry>
+        <f:advanced title="${%Custom rules}">
+            <!-- without this wrapper element, findFollowingTR won't work -->
+            <div class="tr">
+                <f:description>
+                    ${%blurb(instance.currentEffectiveRules)}
+                    <f:helpLink url="${descriptor.helpFile}"/>
+                </f:description>
+                <f:helpArea/>
+            </div>
+            <f:repeatableHeteroProperty field="rules" addCaption="${%Add custom rule}" hasHeader="true" />
+        </f:advanced>
     </f:section>
 </j:jelly>

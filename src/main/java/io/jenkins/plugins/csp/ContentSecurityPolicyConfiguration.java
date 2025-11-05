@@ -24,10 +24,19 @@
 package io.jenkins.plugins.csp;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.PersistentDescriptor;
+import hudson.util.DescribableList;
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.GlobalConfigurationCategory;
+import jenkins.security.csp.CspBuilder;
+import jenkins.security.csp.Directive;
 import org.jenkinsci.Symbol;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -43,13 +52,22 @@ public class ContentSecurityPolicyConfiguration extends GlobalConfiguration impl
 
     public static final String DEFAULT_RULE =
             "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: ; script-src 'self' 'report-sample' usage.jenkins.io;";
-    // Hashes for known static core scripts could be added to limit spam:
-    // 'sha256-z4DDyDYJv6wQlqKsZeAc/6+Aanuong2YoqhblTEpsME=' screenResolution
-    // 'sha256-z/buOmKIvbplzl42NzWxG3io200i1Ln7VCsKlSDq2qs=' var amContainer
 
-    private boolean reportOnly = true;
+    /**
+     * @deprecated v1 configuration.
+     */
+    // TODO How to keep?
+    @Deprecated
+    @SuppressFBWarnings("URF_UNREAD_FIELD")
+    private transient boolean reportOnly = true;
 
-    private String rule = DEFAULT_RULE;
+    private DescribableList<CustomRule, CustomRuleDescriptor> rules = new DescribableList<>(this);
+
+    /**
+     * @deprecated v1 configuration. Has no effect any longer.
+     */
+    @Deprecated
+    private transient String rule;
 
     @NonNull
     @Override
@@ -57,23 +75,22 @@ public class ContentSecurityPolicyConfiguration extends GlobalConfiguration impl
         return GlobalConfigurationCategory.get(GlobalConfigurationCategory.Security.class);
     }
 
-    public String getRule() {
-        return rule;
+    public List<CustomRule> getRules() {
+        return rules;
     }
 
     @DataBoundSetter
-    public void setRule(String rule) {
-        this.rule = rule;
-        save();
+    public void setRules(List<CustomRule> rules) throws IOException {
+        this.rules.replaceBy(rules);
+        this.save();
     }
 
-    public boolean isReportOnly() {
-        return reportOnly;
+    // Jelly
+    public static Map<String, String> getCurrentEffectiveRules() {
+        return new CspBuilder().withDefaultContributions().buildDirectives();
     }
 
-    @DataBoundSetter
-    public void setReportOnly(boolean reportOnly) {
-        this.reportOnly = reportOnly;
-        save();
+    public static List<Directive> getCurrentRules() {
+        return new CspBuilder().withDefaultContributions().getMergedDirectives().stream().sorted(Comparator.comparing(Directive::name)).toList();
     }
 }

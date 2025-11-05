@@ -2,7 +2,7 @@
 <!--
 The MIT License
 
-Copyright 2021 Daniel Beck
+Copyright 2025 CloudBees, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,16 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core">
-    <div>
-        This is the actual Content Security Policy rule being applied to most pages served by Jenkins.
-        The default value for this is:
-        <code>
-            <pre>
-                ${app.getDescriptor('ContentSecurityPolicyConfiguration').DEFAULT_RULE}
-            </pre>
-        </code>
-        Do not add <code>report-uri</code> here.
-        Jenkins dynamically determines the <code>report-uri</code> directive for each page visited to allow associating problems with views and adds it to the <code>Content-Security-Policy</code> header.
-    </div>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+    <f:entry title="${%Domain}" field="domain">
+        <f:textbox />
+    </f:entry>
 </j:jelly>

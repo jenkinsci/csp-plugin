@@ -1,0 +1,14 @@
+<div>
+    <p>
+        Allow inline scripts, styles, or event handlers (e.g., <code>onclick</code>) for the selected directive.
+    </p>
+    <p>
+        This is needed when plugins use inline JavaScript or CSS that cannot be refactored to use external files.
+        Modern plugins should avoid this by using external files instead.
+        <strong>Note:</strong> As of late 2025, Jenkins allows <code>style-src: 'unsafe-inline'</code> by default.
+    </p>
+    <p>
+        <strong>Allowing <code>'unsafe-inline'</code> significantly weakens Content Security Policy protections and should be avoided when possible.</strong>
+        It can be exploited by attackers through cross-site scripting (XSS) vulnerabilities.
+    </p>
+</div>

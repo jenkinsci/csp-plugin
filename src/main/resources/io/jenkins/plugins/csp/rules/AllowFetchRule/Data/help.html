@@ -1,0 +1,12 @@
+<div>
+    <p>
+        Allow resources using the <code>data:</code> scheme, which embeds content directly in HTML using base64 encoding.
+    </p>
+    <p>
+        This is commonly needed for the <code>img-src</code> directive when plugins or scripts generate inline images.
+        For example, charts, graphs, or icons that are dynamically generated as data URIs.
+    </p>
+    <p>
+        <strong>Allowing <code>data:</code> for <code>script-src</code> <!-- TODO Once core no longer needs it: or style-src -->can be unsafe, as it may allow inline scripts to bypass Content Security Policy protections.</strong>
+    </p>
+</div>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+The MIT License
+
+Copyright 2025 CloudBees, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+-->
+<?jelly escape-by-default='true'?>
+<!-- Descriptor#doHelp cannot invokeStatic classes in plugins due to classloader weirdness, so load this differently -->
+<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout">
+    <!-- l:ajax defines rootURL -->
+    <l:ajax>
+        <div>
+            <p>
+                The current configuration results in the following Content-Security-Policy directives being set:
+            </p>
+            <ul>
+                <!-- JENKINS-26579 -->
+                <j:set var="valueByKey" value="${app.pluginManager.uberClassLoader.loadClass('io.jenkins.plugins.csp.ContentSecurityPolicyConfiguration').getMethod('getCurrentEffectiveRules', null).invoke(null, null)}"/>
+                <j:forEach items="${app.pluginManager.uberClassLoader.loadClass('io.jenkins.plugins.csp.ContentSecurityPolicyConfiguration').getMethod('getCurrentRules', null).invoke(null, null)}" var="directive">
+                    <li>
+                        <code><strong>${directive.name()}</strong> ${valueByKey.get(directive.name())}</code>
+                        <j:if test="${directive.inheriting()}">
+                            (inheritance disabled)
+                        </j:if>
+                    </li>
+                </j:forEach>
+            </ul>
+            <p>
+                Additionally, Jenkins adds <code>report-uri</code> and <code>report-to</code> directives.
+                Those support features like the <a href="${rootURL}/manage/content-security-policy-reports">Content Security Policy Report</a>.
+            </p>
+            <div class="warning">
+                The effective configuration may be different, as code contributing to the rules may inspect the current request and change behavior, e.g., based on the URL being requested.
+                To diagnose unexpected <code>Content-Security-Policy</code> header values in those cases, review log messages for the log recorder <code>jenkins.security.csp</code>.
+            </div>
+            <p>
+                The following extensions contribute to these directives in the same order:
+            </p>
+            <ul>
+                <j:invokeStatic className="jenkins.security.csp.Contributor" method="all" var="contributors"/>
+                <j:forEach items="${contributors}" var="contributor">
+                    <li>
+                        <j:set var="className" value="${contributor.getClass().getName()}"/>
+                        <j:set var="plugin" value="${app.pluginManager.whichPlugin(app.pluginManager.uberClassLoader.loadClass(className))}"/>
+                        <j:choose>
+                            <j:when test="${className=='io.jenkins.plugins.csp.ContentSecurityPolicyContributor'}">
+                                <code><strong>${className}</strong></code> applies the configuration in Content Security Policy Plugin
+                            </j:when>
+                            <j:when test="${plugin==null}">
+                                <code><strong>${className}</strong></code> is part of the Jenkins default configuration
+                            </j:when>
+                            <j:otherwise>
+                                <code><strong>${className}</strong></code> in ${plugin.displayName}
+                            </j:otherwise>
+                        </j:choose>
+                    </li>
+                </j:forEach>
+            </ul>
+        </div>
+    </l:ajax>
+</j:jelly>
+
