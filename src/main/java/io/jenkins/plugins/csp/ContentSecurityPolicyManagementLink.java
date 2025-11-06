@@ -105,6 +105,9 @@ public class ContentSecurityPolicyManagementLink extends ManagementLink implemen
 
     @Override
     public void report(@NonNull ViewContext viewContext, @CheckForNull User user, @NonNull JSONObject report) {
+        if (user == null && ExtensionList.lookupSingleton(ContentSecurityPolicyConfiguration.class).isIgnoreAnonymousReports()) {
+            return;
+        }
         final JSONObject cspReport = report.getJSONObject("csp-report");
         final String violatedDirective = cspReport.optString("violated-directive", "<UNKNOWN>");
         final String blockedUri = cspReport.optString("blocked-uri", "<UNKNOWN>");

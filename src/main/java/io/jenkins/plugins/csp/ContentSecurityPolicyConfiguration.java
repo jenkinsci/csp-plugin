@@ -68,6 +68,8 @@ public class ContentSecurityPolicyConfiguration extends GlobalConfiguration impl
     @Deprecated
     private transient String rule;
 
+    private boolean ignoreAnonymousReports;
+
     @NonNull
     @Override
     public GlobalConfigurationCategory getCategory() {
@@ -82,6 +84,15 @@ public class ContentSecurityPolicyConfiguration extends GlobalConfiguration impl
     public void setRules(List<CustomRule> rules) throws IOException {
         this.rules.replaceBy(rules);
         this.save();
+    }
+
+    public boolean isIgnoreAnonymousReports() {
+        return ignoreAnonymousReports;
+    }
+
+    @DataBoundSetter
+    public void setIgnoreAnonymousReports(boolean ignoreAnonymousReports) {
+        this.ignoreAnonymousReports = ignoreAnonymousReports;
     }
 
     // Jelly
