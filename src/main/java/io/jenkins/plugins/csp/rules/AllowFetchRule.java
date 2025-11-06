@@ -17,11 +17,13 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import jenkins.model.Jenkins;
 import jenkins.security.csp.CspBuilder;
 import jenkins.security.csp.Directive;
 import jenkins.security.csp.FetchDirective;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.verb.POST;
 
 public class AllowFetchRule extends CustomRule {
     private final String directive;
@@ -54,7 +56,11 @@ public class AllowFetchRule extends CustomRule {
             return "Allow additional fetch source";
         }
 
+        @POST
         public FormValidation doCheckDirective(@QueryParameter String value) {
+            if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
+                return FormValidation.ok();
+            }
             if (value == null || value.isEmpty()) {
                 return FormValidation.ok();
             }
@@ -83,9 +89,12 @@ public class AllowFetchRule extends CustomRule {
             return FormValidation.error("Not a known fetch directive: " + value);
         }
 
+        @POST
         public ListBoxModel doFillDirectiveItems() {
             ListBoxModel model = new ListBoxModel();
-            Arrays.stream(FetchDirective.values()).map(FetchDirective::toKey).forEach(model::add);
+            if (Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
+                Arrays.stream(FetchDirective.values()).map(FetchDirective::toKey).forEach(model::add);
+            }
             return model;
         }
     }
@@ -205,7 +214,11 @@ public class AllowFetchRule extends CustomRule {
                 return "Domain specification";
             }
 
+            @POST
             public FormValidation doCheckDomain(@QueryParameter String value) {
+                if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
+                    return FormValidation.ok();
+                }
                 if (value == null || value.trim().isEmpty()) {
                     return FormValidation.error("Domain cannot be empty");
                 }

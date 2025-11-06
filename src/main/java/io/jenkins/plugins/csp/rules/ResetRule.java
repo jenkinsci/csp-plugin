@@ -9,11 +9,13 @@ import io.jenkins.plugins.csp.CustomRuleDescriptor;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import jenkins.model.Jenkins;
 import jenkins.security.csp.CspBuilder;
 import jenkins.security.csp.Decorator;
 import jenkins.security.csp.FetchDirective;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.verb.POST;
 
 public class ResetRule extends CustomRule {
 
@@ -52,9 +54,12 @@ public class ResetRule extends CustomRule {
             return "Reset directive";
         }
 
+        @POST
         public ListBoxModel doFillDirectiveItems() {
             ListBoxModel model = new ListBoxModel();
-            Arrays.stream(FetchDirective.values()).map(FetchDirective::toKey).forEach(model::add);
+            if (Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
+                Arrays.stream(FetchDirective.values()).map(FetchDirective::toKey).forEach(model::add);
+            }
             return model;
         }
 
