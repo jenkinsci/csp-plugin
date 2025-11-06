@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.GlobalConfigurationCategory;
 import jenkins.security.csp.CspBuilder;
@@ -91,6 +90,9 @@ public class ContentSecurityPolicyConfiguration extends GlobalConfiguration impl
     }
 
     public static List<Directive> getCurrentRules() {
-        return new CspBuilder().withDefaultContributions().getMergedDirectives().stream().sorted(Comparator.comparing(Directive::name)).toList();
+        return new CspBuilder()
+                .withDefaultContributions().getMergedDirectives().stream()
+                        .sorted(Comparator.comparing(Directive::name))
+                        .toList();
     }
 }

@@ -60,12 +60,9 @@ public class AllowFetchRule extends CustomRule {
             }
             if (FetchDirective.isFetchDirective(value)) {
                 FetchDirective fetchDirective = FetchDirective.fromKey(value);
-                final Optional<Directive> directive =
-                        ContentSecurityPolicyConfiguration
-                                .getCurrentRules()
-                                .stream()
-                                .filter(it -> it.name().equals(value))
-                                .findFirst();
+                final Optional<Directive> directive = ContentSecurityPolicyConfiguration.getCurrentRules().stream()
+                        .filter(it -> it.name().equals(value))
+                        .findFirst();
                 if (directive.isEmpty()) {
                     return FormValidation.okWithMarkup(
                             "This directive is currently undefined and would fall back to <code>"
