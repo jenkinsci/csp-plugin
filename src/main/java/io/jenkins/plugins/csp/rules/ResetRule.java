@@ -58,7 +58,9 @@ public class ResetRule extends CustomRule {
         public ListBoxModel doFillDirectiveItems() {
             ListBoxModel model = new ListBoxModel();
             if (Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
-                Arrays.stream(FetchDirective.values()).map(FetchDirective::toKey).forEach(model::add);
+                Arrays.stream(FetchDirective.values())
+                        .map(FetchDirective::toKey)
+                        .forEach(model::add);
             }
             return model;
         }
