@@ -1,5 +1,6 @@
 <div>
-    This rule resets the specified directive to <code>'none'</code>.
-    This removes all other values, including default values.
-    Note that rules further down the list are applied after this one, and that other plugins can also contribute rules.
+    This rule resets the specified directive.
+    If this is a fetch directive other than <code>default-src</code>, this will result in the directive being set to the values defined for its fallback directive by default.
+    Disable inheritance to ensure this rule resets the directive to <code>'none'</code> in that case as well.
+    Note that rules further down the list are applied after this one, and that other plugins could also contribute rules that are applied later.
 </div>

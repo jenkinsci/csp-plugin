@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2021 Daniel Beck
+ * Copyright (c) 2025 CloudBees, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,58 +23,27 @@
  */
 package io.jenkins.plugins.csp;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
-import hudson.model.PersistentDescriptor;
+import hudson.model.Saveable;
 import hudson.util.DescribableList;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import jenkins.model.GlobalConfiguration;
-import jenkins.model.GlobalConfigurationCategory;
+import jenkins.security.csp.AdvancedConfiguration;
+import jenkins.security.csp.AdvancedConfigurationDescriptor;
 import jenkins.security.csp.CspBuilder;
 import jenkins.security.csp.Directive;
 import org.jenkinsci.Symbol;
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
-/**
- * Customize the Content Security Policy rules.
- */
-@Extension
-@Restricted(NoExternalUse.class)
-@Symbol("contentSecurityPolicyConfiguration")
-public class ContentSecurityPolicyConfiguration extends GlobalConfiguration implements PersistentDescriptor {
+public class CustomRuleAdvancedConfiguration extends AdvancedConfiguration {
 
-    public static final String DEFAULT_RULE =
-            "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: ; script-src 'self' 'report-sample' usage.jenkins.io;";
+    @DataBoundConstructor
+    public CustomRuleAdvancedConfiguration() {}
 
-    /**
-     * @deprecated v1 configuration.
-     */
-    // TODO How to keep?
-    @Deprecated
-    @SuppressFBWarnings("URF_UNREAD_FIELD")
-    private transient boolean reportOnly = true;
-
-    private DescribableList<CustomRule, CustomRuleDescriptor> rules = new DescribableList<>(this);
-
-    /**
-     * @deprecated v1 configuration. Has no effect any longer.
-     */
-    @Deprecated
-    private transient String rule;
-
-    private boolean ignoreAnonymousReports;
-
-    @NonNull
-    @Override
-    public GlobalConfigurationCategory getCategory() {
-        return GlobalConfigurationCategory.get(GlobalConfigurationCategory.Security.class);
-    }
+    private DescribableList<CustomRule, CustomRuleDescriptor> rules = new DescribableList<>(Saveable.NOOP);
 
     public List<CustomRule> getRules() {
         return rules;
@@ -83,16 +52,6 @@ public class ContentSecurityPolicyConfiguration extends GlobalConfiguration impl
     @DataBoundSetter
     public void setRules(List<CustomRule> rules) throws IOException {
         this.rules.replaceBy(rules);
-        this.save();
-    }
-
-    public boolean isIgnoreAnonymousReports() {
-        return ignoreAnonymousReports;
-    }
-
-    @DataBoundSetter
-    public void setIgnoreAnonymousReports(boolean ignoreAnonymousReports) {
-        this.ignoreAnonymousReports = ignoreAnonymousReports;
     }
 
     // Jelly
@@ -106,4 +65,8 @@ public class ContentSecurityPolicyConfiguration extends GlobalConfiguration impl
                         .sorted(Comparator.comparing(Directive::name))
                         .toList();
     }
+
+    @Extension
+    @Symbol("custom")
+    public static class DescriptorImpl extends AdvancedConfigurationDescriptor {}
 }

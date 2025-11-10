@@ -1,3 +1,26 @@
+/*
+ * The MIT License
+ *
+ * Copyright (c) 2025 CloudBees, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 package io.jenkins.plugins.csp.rules;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -9,8 +32,8 @@ import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-import io.jenkins.plugins.csp.ContentSecurityPolicyConfiguration;
 import io.jenkins.plugins.csp.CustomRule;
+import io.jenkins.plugins.csp.CustomRuleAdvancedConfiguration;
 import io.jenkins.plugins.csp.CustomRuleDescriptor;
 import java.util.Arrays;
 import java.util.Locale;
@@ -21,6 +44,7 @@ import jenkins.model.Jenkins;
 import jenkins.security.csp.CspBuilder;
 import jenkins.security.csp.Directive;
 import jenkins.security.csp.FetchDirective;
+import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.verb.POST;
@@ -48,6 +72,7 @@ public class AllowFetchRule extends CustomRule {
         allow.apply(directive, builder);
     }
 
+    @Symbol("allowFetch")
     @Extension
     public static class DescriptorImpl extends CustomRuleDescriptor {
         @NonNull
@@ -66,7 +91,7 @@ public class AllowFetchRule extends CustomRule {
             }
             if (FetchDirective.isFetchDirective(value)) {
                 FetchDirective fetchDirective = FetchDirective.fromKey(value);
-                final Optional<Directive> directive = ContentSecurityPolicyConfiguration.getCurrentRules().stream()
+                final Optional<Directive> directive = CustomRuleAdvancedConfiguration.getCurrentRules().stream()
                         .filter(it -> it.name().equals(value))
                         .findFirst();
                 if (directive.isEmpty()) {
@@ -169,6 +194,7 @@ public class AllowFetchRule extends CustomRule {
         public Data() {}
 
         @Extension
+        @Symbol("dataScheme")
         public static class DescriptorImpl extends SchemeDescriptor {}
     }
 
@@ -177,14 +203,29 @@ public class AllowFetchRule extends CustomRule {
         public Blob() {}
 
         @Extension
+        @Symbol("blobScheme")
         public static class DescriptorImpl extends SchemeDescriptor {}
     }
 
-    public static class Domain extends ValueSpecifier {
+    public static class Self extends ValueSpecifier {
+        @DataBoundConstructor
+        public Self() {}
+
+        @Override
+        String getValue() {
+            return Directive.SELF;
+        }
+
+        @Extension
+        @Symbol("self")
+        public static class DescriptorImpl extends ValueSpecifierDescriptor {}
+    }
+
+    public static class ByDomain extends ValueSpecifier {
         private final String domain;
 
         @DataBoundConstructor
-        public Domain(String domain) {
+        public ByDomain(String domain) {
             this.domain = domain;
         }
 
@@ -203,7 +244,7 @@ public class AllowFetchRule extends CustomRule {
                     == FormValidation.Kind.OK) {
                 builder.add(directive, domain);
             } else {
-                Logger.getLogger(Domain.class.getName())
+                Logger.getLogger(ByDomain.class.getName())
                         .log(Level.FINE, "Not adding invalid domain to " + directive + ": " + domain);
             }
         }

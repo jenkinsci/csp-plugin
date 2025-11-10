@@ -43,6 +43,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jenkins.model.Jenkins;
+import jenkins.security.csp.AdvancedConfiguration;
 import jenkins.security.csp.CspReceiver;
 import jenkins.util.SystemProperties;
 import net.jcip.annotations.GuardedBy;
@@ -106,8 +107,9 @@ public class ContentSecurityPolicyManagementLink extends ManagementLink implemen
     @Override
     public void report(@NonNull ViewContext viewContext, @CheckForNull User user, @NonNull JSONObject report) {
         if (user == null
-                && ExtensionList.lookupSingleton(ContentSecurityPolicyConfiguration.class)
-                        .isIgnoreAnonymousReports()) {
+                && AdvancedConfiguration.getCurrent(ReportingAdvancedConfiguration.class)
+                        .map(ReportingAdvancedConfiguration::isIgnoreAnonymousReports)
+                        .orElse(false)) {
             return;
         }
         final JSONObject cspReport = report.getJSONObject("csp-report");

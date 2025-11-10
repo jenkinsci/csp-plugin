@@ -2,7 +2,7 @@
 <!--
 The MIT License
 
-Copyright 2021 Daniel Beck
+Copyright 2025 CloudBees, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,20 +24,15 @@ THE SOFTWARE.
 -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-    <f:section title="${%Content Security Policy}">
-        <f:entry field="ignoreAnonymousReports">
-            <f:checkbox title="${%Ignore Content-Security-Policy violation reports from anonymous users}"/>
-        </f:entry>
-        <f:advanced title="${%Custom rules}">
-            <!-- without this wrapper element, findFollowingTR won't work -->
-            <div class="tr">
-                <f:description>
-                    ${%blurb(instance.currentEffectiveRules)}
-                    <f:helpLink url="${descriptor.helpFile}"/>
-                </f:description>
-                <f:helpArea/>
-            </div>
-            <f:repeatableHeteroProperty field="rules" addCaption="${%Add custom rule}" hasHeader="true" />
-        </f:advanced>
+    <f:section title="${%Custom Rules}">
+        <!-- without this wrapper element, findFollowingTR won't work -->
+        <div class="tr">
+            <f:description>
+                ${%blurb(instance.currentEffectiveRules)}
+                <f:helpLink url="${descriptor.helpFile}"/>
+            </f:description>
+            <f:helpArea/>
+        </div>
+        <f:repeatableHeteroProperty field="rules" addCaption="${%Add custom rule}" hasHeader="true" />
     </f:section>
 </j:jelly>

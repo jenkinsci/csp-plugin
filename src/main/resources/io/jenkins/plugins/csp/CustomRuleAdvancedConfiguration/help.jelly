@@ -32,14 +32,22 @@ THE SOFTWARE.
                 The current configuration results in the following Content-Security-Policy directives being set:
             </p>
             <ul>
-                <!-- JENKINS-26579 -->
-                <j:set var="valueByKey" value="${app.pluginManager.uberClassLoader.loadClass('io.jenkins.plugins.csp.ContentSecurityPolicyConfiguration').getMethod('getCurrentEffectiveRules', null).invoke(null, null)}"/>
-                <j:forEach items="${app.pluginManager.uberClassLoader.loadClass('io.jenkins.plugins.csp.ContentSecurityPolicyConfiguration').getMethod('getCurrentRules', null).invoke(null, null)}" var="directive">
+                <!-- uberClassloader use is JENKINS-26579 workaround -->
+                <j:set var="valueByKey" value="${app.pluginManager.uberClassLoader.loadClass('io.jenkins.plugins.csp.CustomRuleAdvancedConfiguration').getMethod('getCurrentEffectiveRules', null).invoke(null, null)}"/>
+                <j:forEach items="${app.pluginManager.uberClassLoader.loadClass('io.jenkins.plugins.csp.CustomRuleAdvancedConfiguration').getMethod('getCurrentRules', null).invoke(null, null)}" var="directive">
                     <li>
                         <code><strong>${directive.name()}</strong> ${valueByKey.get(directive.name())}</code>
-                        <j:if test="${directive.inheriting()}">
-                            (inheritance disabled)
-                        </j:if>
+                        <j:choose>
+                            <j:when test="${directive.inheriting() == null}">
+                                (not a fetch directive)
+                            </j:when>
+                            <j:when test="${directive.inheriting()}">
+                                (inheriting)
+                            </j:when>
+                            <j:otherwise>
+                                (not inheriting)
+                            </j:otherwise>
+                        </j:choose>
                     </li>
                 </j:forEach>
             </ul>
