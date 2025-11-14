@@ -32,7 +32,7 @@
   <properties>
     <revision>2</revision>
     <changelist>999999-SNAPSHOT</changelist>
-    <jenkins.version>2.536-rc37674.a_95436d94607</jenkins.version>
+    <jenkins.version>2.537-rc37703.ecd7424a_2f93</jenkins.version>
     <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
     <spotless.check.skip>false</spotless.check.skip>
     <!-- More targeted @SuppressRestrictedWarnings(Beta.class) did not work -->

@@ -105,8 +105,8 @@ public class ContentSecurityPolicyManagementLink extends ManagementLink implemen
     }
 
     @Override
-    public void report(@NonNull ViewContext viewContext, @CheckForNull User user, @NonNull JSONObject report) {
-        if (user == null
+    public void report(@NonNull ViewContext viewContext, @CheckForNull String userId, @NonNull JSONObject report) {
+        if (userId == null
                 && AdvancedConfiguration.getCurrent(ReportingAdvancedConfiguration.class)
                         .map(ReportingAdvancedConfiguration::isIgnoreAnonymousReports)
                         .orElse(false)) {
@@ -123,7 +123,7 @@ public class ContentSecurityPolicyManagementLink extends ManagementLink implemen
                 blockedUri,
                 scriptSample,
                 Instant.now(),
-                user == null ? null : user.getId());
+                userId);
         synchronized (records) {
             records.add(record);
         }
