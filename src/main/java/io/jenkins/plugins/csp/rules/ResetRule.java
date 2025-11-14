@@ -94,8 +94,12 @@ public class ResetRule extends CustomRule {
             return model;
         }
 
+        @POST
         public FormValidation doCheckDirective(
                 @QueryParameter String value, @QueryParameter boolean disableInheritance) {
+            if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
+                return FormValidation.ok();
+            }
             return FetchDirective.toFetchDirective(value)
                     .map(fd -> {
                         /*
@@ -131,8 +135,12 @@ public class ResetRule extends CustomRule {
                     .orElse(FormValidation.ok());
         }
 
+        @POST
         public FormValidation doCheckDisableInheritance(
                 @QueryParameter boolean value, @QueryParameter String directive) {
+            if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
+                return FormValidation.ok();
+            }
             if (value && !FetchDirective.isFetchDirective(directive)) {
                 return FormValidation.warningWithMarkup(
                         "The directive '<code>" + Util.xmlEscape(directive)
