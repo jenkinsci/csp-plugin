@@ -69,7 +69,7 @@ public class CustomRoleAdvancedConfigurationTest {
         assertThat(
                 rules,
                 equalTo(
-                        "default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline';"));
+                        "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline';"));
     }
 
     @Test
@@ -78,7 +78,7 @@ public class CustomRoleAdvancedConfigurationTest {
         assertThat(
                 getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
                 startsWith(
-                        "default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
+                        "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
 
         // Ensure we have the correct decider in place for these tests
         final Optional<CspHeaderDecider> decider = CspHeaderDecider.getCurrentDecider();
@@ -92,7 +92,7 @@ public class CustomRoleAdvancedConfigurationTest {
         assertThat(
                 getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
                 startsWith(
-                        "default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' avatars.githubusercontent.com data:; object-src 'none'; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
+                        "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' avatars.githubusercontent.com data:; object-src 'none'; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
 
         final Optional<ReportingAdvancedConfiguration> reportingConfig =
                 AdvancedConfiguration.getCurrent(ReportingAdvancedConfiguration.class);
@@ -106,7 +106,7 @@ public class CustomRoleAdvancedConfigurationTest {
         assertThat(
                 getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
                 startsWith(
-                        "default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self' 'unsafe-inline'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
+                        "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self' 'unsafe-inline'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     @Test
@@ -115,7 +115,7 @@ public class CustomRoleAdvancedConfigurationTest {
         assertThat(
                 getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
                 startsWith(
-                        "default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self' 'unsafe-eval'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
+                        "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self' 'unsafe-eval'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     @Test
@@ -124,7 +124,7 @@ public class CustomRoleAdvancedConfigurationTest {
         assertThat(
                 getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
                 startsWith(
-                        "default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self' data:; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
+                        "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self' data:; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     @Test
@@ -133,7 +133,7 @@ public class CustomRoleAdvancedConfigurationTest {
         assertThat(
                 getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicyReportOnly),
                 startsWith(
-                        "default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self' blob:; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
+                        "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self' blob:; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     @Test
@@ -142,7 +142,7 @@ public class CustomRoleAdvancedConfigurationTest {
         assertThat(
                 getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicyReportOnly),
                 startsWith(
-                        "connect-src 'self'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
+                        "base-uri 'none'; connect-src 'self'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     @Test
@@ -151,7 +151,7 @@ public class CustomRoleAdvancedConfigurationTest {
         assertThat(
                 getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
                 startsWith(
-                        "default-src 'self'; form-action 'self'; frame-ancestors 'self'; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
+                        "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     @Test
@@ -160,7 +160,7 @@ public class CustomRoleAdvancedConfigurationTest {
         assertThat(
                 getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
                 startsWith(
-                        "default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' blob: cdn.example.com data:; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
+                        "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' blob: cdn.example.com data:; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     @Test
@@ -169,7 +169,7 @@ public class CustomRoleAdvancedConfigurationTest {
         assertThat(
                 getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
                 startsWith(
-                        "connect-src blob:; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
+                        "base-uri 'none'; connect-src blob:; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     private String getHeaderAndAssertTheOtherIsAbsent(CspHeader header) throws IOException, SAXException {
