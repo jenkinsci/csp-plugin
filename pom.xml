@@ -34,7 +34,7 @@
     <changelist>999999-SNAPSHOT</changelist>
     <jenkins.baseline>2.528</jenkins.baseline>
     <!-- TODO https://github.com/jenkinsci/jenkins/pull/11269 -->
-    <jenkins.version>2.537-rc37703.ecd7424a_2f93</jenkins.version>
+    <jenkins.version>2.537-rc37708.c68b_b_5e3f889</jenkins.version>
     <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
     <spotless.check.skip>false</spotless.check.skip>
     <!-- More targeted @SuppressRestrictedWarnings(Beta.class) did not work -->
