@@ -37,6 +37,7 @@ The following rules can be configured:
 CSP plugin 2.x supports configuration via the Jenkins Configuration as Code (CasC) plugin.
 Sample configuration snippet:
 
+// Keep in sync with src/test/resources/io/jenkins/plugins/csp/Readme.yml
 [source,yaml]
 ----
 security:

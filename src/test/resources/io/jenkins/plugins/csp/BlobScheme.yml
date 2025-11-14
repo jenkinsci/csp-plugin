@@ -1,0 +1,9 @@
+security:
+  contentSecurityPolicy:
+    enforce: false
+    advanced:
+      - custom:
+          rules:
+            - allowFetch:
+                allow: "blobScheme"
+                directive: "script-src"

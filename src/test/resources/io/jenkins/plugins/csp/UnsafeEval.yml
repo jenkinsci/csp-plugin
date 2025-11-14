@@ -1,0 +1,10 @@
+security:
+  contentSecurityPolicy:
+    enforce: true
+    advanced:
+      - custom:
+          rules:
+            - allowFetch:
+                allow:
+                  unsafeEval: {}
+                directive: "script-src"

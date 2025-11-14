@@ -1,0 +1,9 @@
+security:
+  contentSecurityPolicy:
+    enforce: true
+    advanced:
+      - custom:
+          rules:
+            - allowFetch:
+                allow: "unsafeInline"
+                directive: "script-src"

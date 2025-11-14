@@ -1,0 +1,18 @@
+security:
+  contentSecurityPolicy:
+    enforce: true
+    advanced:
+      - custom:
+          rules:
+            # This rule will be discarded because of the reset rule below
+            - allowFetch:
+                directive: "connect-src"
+                allow:
+                  byDomain:
+                    domain: "cdn.example.com"
+            - reset:
+                directive: "connect-src"
+                disableInheritance: true
+            - allowFetch:
+                directive: "connect-src"
+                allow: "blobScheme"

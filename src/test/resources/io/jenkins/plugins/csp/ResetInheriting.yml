@@ -1,0 +1,9 @@
+security:
+  contentSecurityPolicy:
+    enforce: true
+    advanced:
+      - custom:
+          rules:
+            - reset:
+                directive: "img-src"
+                disableInheritance: false

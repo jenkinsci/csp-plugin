@@ -1,0 +1,17 @@
+# Keep in sync with README.adoc
+security:
+  contentSecurityPolicy:
+    enforce: true
+    advanced:
+      - reporting:
+          ignoreAnonymousReports: true
+      - custom:
+          rules:
+            - allowFetch:
+                allow:
+                  byDomain:
+                    domain: "avatars.githubusercontent.com"
+                directive: "img-src"
+            - reset:
+                directive: "object-src"
+                disableInheritance: true

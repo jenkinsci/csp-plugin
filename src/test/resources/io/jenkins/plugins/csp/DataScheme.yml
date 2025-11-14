@@ -1,0 +1,10 @@
+security:
+  contentSecurityPolicy:
+    enforce: true
+    advanced:
+      - custom:
+          rules:
+            - allowFetch:
+                allow:
+                  dataScheme: {}
+                directive: "script-src"

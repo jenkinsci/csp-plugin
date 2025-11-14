@@ -1,0 +1,18 @@
+security:
+  contentSecurityPolicy:
+    enforce: true
+    advanced:
+      - custom:
+          rules:
+            - allowFetch:
+                directive: "img-src"
+                allow:
+                  byDomain:
+                    domain: "cdn.example.com"
+            - allowFetch:
+                allow:
+                  blobScheme: {}
+                directive: "img-src"
+            - reset:
+                directive: "script-src"
+                disableInheritance: false

@@ -32,29 +32,38 @@
   <properties>
     <revision>2</revision>
     <changelist>999999-SNAPSHOT</changelist>
+    <jenkins.baseline>2.528</jenkins.baseline>
+    <!-- TODO https://github.com/jenkinsci/jenkins/pull/11269 -->
     <jenkins.version>2.537-rc37703.ecd7424a_2f93</jenkins.version>
     <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
     <spotless.check.skip>false</spotless.check.skip>
     <!-- More targeted @SuppressRestrictedWarnings(Beta.class) did not work -->
     <useBeta>true</useBeta>
-    <ban-junit4-imports.skip>false</ban-junit4-imports.skip>
     <hpi.compatibleSinceVersion>2.0</hpi.compatibleSinceVersion>
   </properties>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.jenkins.tools.bom</groupId>
+        <artifactId>bom-${jenkins.baseline}.x</artifactId>
+        <version>5681.v79d2ddf61465</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
-      <groupId>org.kohsuke</groupId>
-      <artifactId>access-modifier-suppressions</artifactId>
-      <version>${access-modifier-checker.version}</version>
-      <!-- Not needed at runtime -->
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <!-- Upper bounds and comes from core -->
-          <groupId>org.kohsuke</groupId>
-          <artifactId>access-modifier-annotation</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>io.jenkins</groupId>
+      <artifactId>configuration-as-code</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.configuration-as-code</groupId>
+      <artifactId>test-harness</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
