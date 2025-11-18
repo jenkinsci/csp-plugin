@@ -1,0 +1,13 @@
+<div>
+    <p>
+        Allow resources from the same origin as the Jenkins instance (the <code>'self'</code> keyword).
+    </p>
+    <p>
+        This is a good, safe default option for most directives, as it restricts resource loading and navigation to the same domain, protocol, and port as Jenkins itself.
+        Note that this can be unsafe when not setting a <a href="https://www.jenkins.io/redirect/resource-root-url">resource root URL</a>: Users can place, e.g., script files in job workspaces, which would be considered to be from the same origin.
+    </p>
+    <p>
+        <strong>Note:</strong> For most directives, <code>'self'</code> is already set by default in Jenkins.
+        You typically only need to add this explicitly after using a reset rule.
+    </p>
+</div>
