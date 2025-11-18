@@ -1,0 +1,16 @@
+security:
+  contentSecurityPolicy:
+    enforce: true
+    advanced:
+      - custom:
+          rules:
+            - allowNavigation:
+                directive: "form-action"
+                allow:
+                  byDomain:
+                    domain: "forms.example.com"
+            - allowNavigation:
+                directive: "frame-ancestors"
+                allow:
+                  byDomain:
+                    domain: "embed.example.com"

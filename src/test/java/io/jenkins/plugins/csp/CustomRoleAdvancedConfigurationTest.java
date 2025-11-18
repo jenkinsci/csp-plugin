@@ -12,6 +12,7 @@ import io.jenkins.plugins.casc.misc.JenkinsConfiguredWithCodeRule;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Optional;
+import jenkins.model.Jenkins;
 import jenkins.security.csp.AdvancedConfiguration;
 import jenkins.security.csp.CspBuilder;
 import jenkins.security.csp.CspHeader;
@@ -25,6 +26,7 @@ import org.junit.Test;
 import org.jvnet.hudson.test.FlagRule;
 import org.jvnet.hudson.test.For;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.MockAuthorizationStrategy;
 import org.xml.sax.SAXException;
 
 @For(CustomRuleAdvancedConfiguration.class)
@@ -172,8 +174,78 @@ public class CustomRoleAdvancedConfigurationTest {
                         "base-uri 'none'; connect-src blob:; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
+    @Test
+    @ConfiguredWithCode("NavigationFormActionDomain.yml")
+    public void testNavigationFormActionDomain() throws IOException, SAXException {
+        assertThat(
+                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
+                startsWith(
+                        "base-uri 'none'; default-src 'self'; form-action 'self' external-form.example.com; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
+    }
+
+    @Test
+    @ConfiguredWithCode("NavigationFrameAncestorsDomain.yml")
+    public void testNavigationFrameAncestorsDomain() throws IOException, SAXException {
+        assertThat(
+                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
+                startsWith(
+                        "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self' parent.example.com; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
+    }
+
+    @Test
+    @ConfiguredWithCode("NavigationSelfValueAfterReset.yml")
+    public void testNavigationSelfValueAfterReset() throws IOException, SAXException {
+        assertThat(
+                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicyReportOnly),
+                startsWith(
+                        "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
+    }
+
+    @Test
+    @ConfiguredWithCode("NavigationOtherValueAfterReset.yml")
+    public void testNavigationOtherValueAfterReset() throws IOException, SAXException {
+        assertThat(
+                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicyReportOnly),
+                startsWith(
+                        "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors trusted.example.com; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
+    }
+
+    @Test
+    @ConfiguredWithCode("NavigationMultipleRules.yml")
+    public void testNavigationMultipleRules() throws IOException, SAXException {
+        assertThat(
+                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
+                startsWith(
+                        "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self' trusted1.example.com trusted2.example.com; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
+    }
+
+    @Test
+    @ConfiguredWithCode("NavigationBothDirectives.yml")
+    public void testNavigationBothDirectives() throws IOException, SAXException {
+        assertThat(
+                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
+                startsWith(
+                        "base-uri 'none'; default-src 'self'; form-action 'self' forms.example.com; frame-ancestors 'self' embed.example.com; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
+    }
+
+    @Test
+    @ConfiguredWithCode("InvalidDomain.yml")
+    public void testInvalidDomain() throws IOException, SAXException {
+        final String cspPrefix =
+                "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-";
+        assertThat(getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy), startsWith(cspPrefix));
+
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+        j.jenkins.setAuthorizationStrategy(new MockAuthorizationStrategy()
+                .grant(Jenkins.ADMINISTER)
+                .everywhere()
+                .to("admin"));
+        // This is an anonymous user:
+        assertThat(getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy), startsWith(cspPrefix));
+    }
+
     private String getHeaderAndAssertTheOtherIsAbsent(CspHeader header) throws IOException, SAXException {
-        try (JenkinsRule.WebClient wc = j.createWebClient()) {
+        try (JenkinsRule.WebClient wc = j.createWebClient().withThrowExceptionOnFailingStatusCode(false)) {
             final HtmlPage page = wc.goTo("");
             final WebResponse rsp = page.getWebResponse();
             final String cspHeader = rsp.getResponseHeaderValue(header.getHeaderName());

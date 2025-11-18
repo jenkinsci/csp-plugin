@@ -1,0 +1,11 @@
+security:
+  contentSecurityPolicy:
+    enforce: true
+    advanced:
+      - custom:
+          rules:
+            - allowNavigation:
+                directive: "frame-ancestors"
+                allow:
+                  byDomain:
+                    domain: "parent.example.com"

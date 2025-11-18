@@ -1,0 +1,11 @@
+security:
+  contentSecurityPolicy:
+    enforce: true
+    advanced:
+      - custom:
+          rules:
+            - allowNavigation:
+                directive: "form-action"
+                allow:
+                  byDomain:
+                    domain: "external-form.example.com"

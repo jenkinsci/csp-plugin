@@ -25,21 +25,14 @@ package io.jenkins.plugins.csp.rules;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
-import hudson.ExtensionList;
-import hudson.ExtensionPoint;
 import hudson.Util;
-import hudson.model.Describable;
-import hudson.model.Descriptor;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import io.jenkins.plugins.csp.CustomRule;
 import io.jenkins.plugins.csp.CustomRuleAdvancedConfiguration;
 import io.jenkins.plugins.csp.CustomRuleDescriptor;
 import java.util.Arrays;
-import java.util.Locale;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import jenkins.model.Jenkins;
 import jenkins.security.csp.CspBuilder;
 import jenkins.security.csp.Directive;
@@ -123,157 +116,6 @@ public class AllowFetchRule extends CustomRule {
                         .forEach(model::add);
             }
             return model;
-        }
-    }
-
-    public abstract static class ValueSpecifier implements Describable<ValueSpecifier>, ExtensionPoint {
-        abstract String getValue();
-
-        public void apply(String directive, CspBuilder builder) {
-            builder.add(directive, getValue());
-        }
-    }
-
-    public abstract static class ValueSpecifierDescriptor extends Descriptor<ValueSpecifier> {}
-
-    public static class UnsafeInline extends ValueSpecifier {
-        @DataBoundConstructor
-        public UnsafeInline() {}
-
-        @Override
-        String getValue() {
-            return Directive.UNSAFE_INLINE;
-        }
-
-        @Extension
-        public static class DescriptorImpl extends ValueSpecifierDescriptor {
-            @NonNull
-            @Override
-            public String getDisplayName() {
-                return "unsafe-inline";
-            }
-        }
-    }
-
-    public static class UnsafeEval extends ValueSpecifier {
-        @DataBoundConstructor
-        public UnsafeEval() {}
-
-        @Override
-        String getValue() {
-            return Directive.UNSAFE_EVAL;
-        }
-
-        @Extension
-        public static class DescriptorImpl extends ValueSpecifierDescriptor {
-            @NonNull
-            @Override
-            public String getDisplayName() {
-                return "unsafe-eval";
-            }
-        }
-    }
-
-    private abstract static class Scheme extends ValueSpecifier {
-        @Override
-        String getValue() {
-            return getClass().getSimpleName().toLowerCase(Locale.ROOT) + ":";
-        }
-    }
-
-    private abstract static class SchemeDescriptor extends ValueSpecifierDescriptor {
-        @NonNull
-        @Override
-        public String getDisplayName() {
-            return "Scheme " + getClass().getEnclosingClass().getSimpleName().toLowerCase(Locale.ROOT) + ":";
-        }
-    }
-
-    public static class Data extends Scheme {
-        @DataBoundConstructor
-        public Data() {}
-
-        @Extension
-        @Symbol("dataScheme")
-        public static class DescriptorImpl extends SchemeDescriptor {}
-    }
-
-    public static class Blob extends Scheme {
-        @DataBoundConstructor
-        public Blob() {}
-
-        @Extension
-        @Symbol("blobScheme")
-        public static class DescriptorImpl extends SchemeDescriptor {}
-    }
-
-    public static class Self extends ValueSpecifier {
-        @DataBoundConstructor
-        public Self() {}
-
-        @Override
-        String getValue() {
-            return Directive.SELF;
-        }
-
-        @Extension
-        @Symbol("self")
-        public static class DescriptorImpl extends ValueSpecifierDescriptor {}
-    }
-
-    public static class ByDomain extends ValueSpecifier {
-        private final String domain;
-
-        @DataBoundConstructor
-        public ByDomain(String domain) {
-            this.domain = domain;
-        }
-
-        public String getDomain() {
-            return domain;
-        }
-
-        @Override
-        String getValue() {
-            return "'" + domain + "'";
-        }
-
-        @Override
-        public void apply(String directive, CspBuilder builder) {
-            if (ExtensionList.lookupSingleton(DescriptorImpl.class).doCheckDomain(domain).kind
-                    == FormValidation.Kind.OK) {
-                builder.add(directive, domain);
-            } else {
-                Logger.getLogger(ByDomain.class.getName())
-                        .log(Level.FINE, "Not adding invalid domain to " + directive + ": " + domain);
-            }
-        }
-
-        @Extension
-        public static class DescriptorImpl extends ValueSpecifierDescriptor {
-            @NonNull
-            @Override
-            public String getDisplayName() {
-                return "Domain specification";
-            }
-
-            @POST
-            public FormValidation doCheckDomain(@QueryParameter String value) {
-                if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
-                    return FormValidation.ok();
-                }
-                if (value == null || value.trim().isEmpty()) {
-                    return FormValidation.error("Domain cannot be empty");
-                }
-
-                // Allow wildcards, domains with optional scheme and port
-                if (value.matches(
-                        "^(https?://)?([*]\\.|[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)*[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(:[0-9]{1,5})?$")) {
-                    return FormValidation.ok();
-                }
-
-                return FormValidation.error("Invalid domain format");
-            }
         }
     }
 }

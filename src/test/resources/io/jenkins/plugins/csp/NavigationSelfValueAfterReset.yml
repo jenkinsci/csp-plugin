@@ -1,0 +1,12 @@
+security:
+  contentSecurityPolicy:
+    enforce: false
+    advanced:
+      - custom:
+          rules:
+            - reset:
+                directive: "form-action"
+                disableInheritance: false
+            - allowNavigation:
+                directive: "form-action"
+                allow: "self"

@@ -1,0 +1,11 @@
+security:
+  contentSecurityPolicy:
+    enforce: true
+    advanced:
+      - custom:
+          rules:
+            - allowFetch:
+                directive: "img-src"
+                allow:
+                  byDomain:
+                    domain: "not a valid domain"

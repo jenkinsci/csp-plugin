@@ -1,0 +1,13 @@
+security:
+  contentSecurityPolicy:
+    enforce: false
+    advanced:
+      - custom:
+          rules:
+            - reset:
+                directive: "frame-ancestors"
+            - allowNavigation:
+                directive: "frame-ancestors"
+                allow:
+                  byDomain:
+                    domain: "trusted.example.com"
