@@ -23,14 +23,16 @@ This is also where you can opt out of receiving Content Security Policy reports 
 
 The following rules can be configured:
 
-* **Reset directive** allows resetting a specific directive.
-  Barring any other rules applied later, the specified directive will not be included in the Content Security Policy header.
-  For fetch directives (e.g., `img-src`), this means they will fall back to their parent directive (e.g., `default-src`).
-  If you check the _Disable Inheritance_ box for a fetch directive, the rule will instead be set to `'none'`, disallowing everything.
-// TODO This is weird: form-action and frame-ancestors should probably work similarly?
 * **Allow additional fetch source** allows adding additional allowed sources to a specific _fetch directive_.
-  You can select from a list of common source expressions.
-  Most commonly useful is probably the **Domain specification** option, which allows specifying an arbitrary domain.
+You can select from a list of common source expressions.
+Most commonly useful is probably the **Domain specification** option, which allows specifying an arbitrary domain.
+* **Allow additional navigation source** allows adding additional allowed sources to `form-action` or `frame-ancestors` directives.
+You can select **Self**, which is only useful if the directive has been reset (see below), or **Domain specification**, which allows specifying an arbitrary domain.
+* **Reset directive** allows resetting a specific directive.
+Barring any other rules applied later, the specified directive will not be included in the Content Security Policy header.
+For fetch directives (e.g., `img-src`), this means they will fall back to their parent directive (e.g., `default-src`).
+If you check the _Disable Inheritance_ box for a fetch directive, the rule will instead be set to `'none'`, disallowing everything.
+// TODO This is weird: form-action and frame-ancestors should probably work similarly?
 
 == Configuration as Code
 
@@ -57,6 +59,8 @@ security:
             directive: "object-src"
             disableInheritance: true
 ----
+
+Further examples of configuration snippets can be found in the `src/test/resources/io/jenkins/plugins/csp/` directory of the plugin source code.
 
 All options in `advanced` are also effective while the UI configuration is hidden through the Java system property `jenkins.security.csp.CspHeader.headerName`, or in development mode.
 
