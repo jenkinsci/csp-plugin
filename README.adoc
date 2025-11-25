@@ -2,14 +2,14 @@
 
 == Introduction
 
-This plugin allows administrators to customize the Content Security Policy rules introduced in Jenkins 2.TODO.
+This plugin allows administrators to customize the Content Security Policy rules introduced in Jenkins 2.539.
 This allows relaxing the rules to get otherwise incompatible plugins to work without disabling protections entirely.
 Alternatively, administrators can also further restrict the rules if they're willing to spend time fine-tuning them.
 A new view of received Content Security Policy reports makes it easy to understand how the current rules impact users.
 
 NOTE: Before version 2.x, this plugin implemented standalone Content Security Policy enforcement.
-This is obsolete since Jenkins 2.TODO.
-Versions 1.x of this plugin should be updated or uninstalled when updating Jenkins to 2.TODO or newer.
+This is obsolete since Jenkins 2.539.
+Versions 1.x of this plugin should be updated or uninstalled when updating Jenkins to 2.539 or newer.
 
 == Getting started
 
