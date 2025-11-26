@@ -60,7 +60,7 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
 @Restricted(NoExternalUse.class)
 @Symbol("contentSecurityPolicyManagementLink")
 public class ContentSecurityPolicyManagementLink extends ManagementLink implements StaplerProxy, CspReceiver {
-    public static final Logger LOGGER = Logger.getLogger(ContentSecurityPolicyManagementLink.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ContentSecurityPolicyManagementLink.class.getName());
 
     public static final int ROTATE_PERIOD_HOURS = SystemProperties.getInteger(
             ContentSecurityPolicyManagementLink.class.getName() + ".ROTATE_PERIOD_HOURS", 6);

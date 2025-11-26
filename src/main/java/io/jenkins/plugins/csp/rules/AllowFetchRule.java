@@ -95,7 +95,7 @@ public class AllowFetchRule extends CustomRule {
                 }
                 final Directive effectiveDirective = directive.get();
                 if (effectiveDirective.inheriting()) {
-                    return FormValidation.okWithMarkup("This directive inherits from from '<code>"
+                    return FormValidation.okWithMarkup("This directive inherits from '<code>"
                             + fetchDirective.getFallback().toKey() + "</code>'. Its current effective value is <code>"
                             + Util.xmlEscape(String.join(" ", effectiveDirective.values())) + "</code>");
                 } else {

@@ -30,7 +30,7 @@ import org.jvnet.hudson.test.MockAuthorizationStrategy;
 import org.xml.sax.SAXException;
 
 @For(CustomRuleAdvancedConfiguration.class)
-public class CustomRoleAdvancedConfigurationTest {
+public class CustomRuleAdvancedConfigurationTest {
 
     static Field developmentHeaderDeciderDisabledField;
 
