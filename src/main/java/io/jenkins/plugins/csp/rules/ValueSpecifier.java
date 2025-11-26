@@ -156,7 +156,7 @@ public abstract class ValueSpecifier implements Describable<ValueSpecifier>, Ext
 
         @Override
         protected String getValue() {
-            return "'" + domain + "'";
+            return null; // unused
         }
 
         @Override
