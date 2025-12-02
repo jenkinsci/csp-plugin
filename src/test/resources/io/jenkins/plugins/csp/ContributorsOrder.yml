@@ -1,0 +1,14 @@
+security:
+  contentSecurityPolicy:
+    enforce: true
+    advanced:
+      - custom:
+          rules:
+            - reset:
+                directive: "img-src"
+                disableInheritance: true
+            - allowFetch:
+                directive: "img-src"
+                allow:
+                  byDomain:
+                    domain: "cdn.example.com"

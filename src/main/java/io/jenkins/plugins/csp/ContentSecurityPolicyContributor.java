@@ -31,7 +31,11 @@ import jenkins.security.csp.AdvancedConfiguration;
 import jenkins.security.csp.Contributor;
 import jenkins.security.csp.CspBuilder;
 
-@Extension
+/**
+ * Apply custom CSP rules from the {@link CustomRuleAdvancedConfiguration}.
+ * Lowest ordinal so that it runs after other contributors and can effectively override them.
+ */
+@Extension(ordinal = -Double.MAX_VALUE)
 public class ContentSecurityPolicyContributor implements Contributor {
 
     private static final Logger LOGGER = Logger.getLogger(ContentSecurityPolicyContributor.class.getName());

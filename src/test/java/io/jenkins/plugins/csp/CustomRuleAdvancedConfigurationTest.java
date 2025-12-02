@@ -14,9 +14,11 @@ import java.lang.reflect.Field;
 import java.util.Optional;
 import jenkins.model.Jenkins;
 import jenkins.security.csp.AdvancedConfiguration;
+import jenkins.security.csp.Contributor;
 import jenkins.security.csp.CspBuilder;
 import jenkins.security.csp.CspHeader;
 import jenkins.security.csp.CspHeaderDecider;
+import jenkins.security.csp.Directive;
 import jenkins.security.csp.impl.CspConfiguration;
 import jenkins.security.csp.impl.DevelopmentHeaderDecider;
 import org.htmlunit.WebResponse;
@@ -27,6 +29,7 @@ import org.jvnet.hudson.test.FlagRule;
 import org.jvnet.hudson.test.For;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
+import org.jvnet.hudson.test.TestExtension;
 import org.xml.sax.SAXException;
 
 @For(CustomRuleAdvancedConfiguration.class)
@@ -244,6 +247,15 @@ public class CustomRuleAdvancedConfigurationTest {
         assertThat(getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy), startsWith(cspPrefix));
     }
 
+    @Test
+    @ConfiguredWithCode("ContributorsOrder.yml")
+    public void testContributorsOrder() throws IOException, SAXException {
+        String cspPrefix =
+                "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src cdn.example.com; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-";
+        ;
+        assertThat(getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy), startsWith(cspPrefix));
+    }
+
     private String getHeaderAndAssertTheOtherIsAbsent(CspHeader header) throws IOException, SAXException {
         try (JenkinsRule.WebClient wc = j.createWebClient().withThrowExceptionOnFailingStatusCode(false)) {
             final HtmlPage page = wc.goTo("");
@@ -257,6 +269,22 @@ public class CustomRuleAdvancedConfigurationTest {
                                     : CspHeader.ContentSecurityPolicy.getHeaderName()),
                     nullValue());
             return cspHeader;
+        }
+    }
+
+    @TestExtension({"testContributorsOrder"})
+    public static class AAAAContributor implements Contributor {
+        @Override
+        public void apply(CspBuilder builder) {
+            builder.add(Directive.IMG_SRC, "aaaa.example.com");
+        }
+    }
+
+    @TestExtension({"testContributorsOrder"})
+    public static class ZZZZContributor implements Contributor {
+        @Override
+        public void apply(CspBuilder builder) {
+            builder.add(Directive.IMG_SRC, "zzzz.example.com");
         }
     }
 }
