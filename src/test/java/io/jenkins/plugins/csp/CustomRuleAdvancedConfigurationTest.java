@@ -9,7 +9,7 @@ import static org.hamcrest.Matchers.startsWith;
 
 import io.jenkins.plugins.casc.misc.ConfiguredWithCode;
 import io.jenkins.plugins.casc.misc.JenkinsConfiguredWithCodeRule;
-import java.io.IOException;
+import io.jenkins.plugins.casc.misc.junit.jupiter.WithJenkinsConfiguredWithCode;
 import java.lang.reflect.Field;
 import java.util.Optional;
 import jenkins.model.Jenkins;
@@ -23,52 +23,43 @@ import jenkins.security.csp.impl.CspConfiguration;
 import jenkins.security.csp.impl.DevelopmentHeaderDecider;
 import org.htmlunit.WebResponse;
 import org.htmlunit.html.HtmlPage;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.FlagRule;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.jvnet.hudson.test.For;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
 import org.jvnet.hudson.test.TestExtension;
-import org.xml.sax.SAXException;
+import org.jvnet.hudson.test.junit.jupiter.FlagExtension;
 
 @For(CustomRuleAdvancedConfiguration.class)
-public class CustomRuleAdvancedConfigurationTest {
+@WithJenkinsConfiguredWithCode
+class CustomRuleAdvancedConfigurationTest {
 
-    static Field developmentHeaderDeciderDisabledField;
-
-    static {
-        try {
-            developmentHeaderDeciderDisabledField = DevelopmentHeaderDecider.class.getDeclaredField("DISABLED");
-            developmentHeaderDeciderDisabledField.setAccessible(true);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Rule
-    public JenkinsConfiguredWithCodeRule j = new JenkinsConfiguredWithCodeRule();
-
-    @Rule
-    public FlagRule<Boolean> flagRule = new FlagRule<>(
+    @RegisterExtension
+    @SuppressWarnings("unused")
+    private final FlagExtension<Boolean> flagExtension = new FlagExtension<>(
             () -> {
                 try {
-                    return (Boolean) developmentHeaderDeciderDisabledField.get(null);
-                } catch (IllegalAccessException e) {
+                    Field field = DevelopmentHeaderDecider.class.getDeclaredField("DISABLED");
+                    field.setAccessible(true);
+                    return (Boolean) field.get(null);
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             },
             (v) -> {
                 try {
-                    developmentHeaderDeciderDisabledField.set(null, v);
-                } catch (IllegalAccessException e) {
+                    Field field = DevelopmentHeaderDecider.class.getDeclaredField("DISABLED");
+                    field.setAccessible(true);
+                    field.set(null, v);
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             },
             true);
 
     @Test
-    public void testCoreDefaultRules() {
+    void testCoreDefaultRules(JenkinsConfiguredWithCodeRule j) {
         // These tests are sensitive to what the core default rules are, so assert these in isolation.
         final String rules = new CspBuilder().withDefaultContributions().build();
         assertThat(
@@ -79,9 +70,9 @@ public class CustomRuleAdvancedConfigurationTest {
 
     @Test
     @ConfiguredWithCode("Basics.yml")
-    public void testBasics() throws IOException, SAXException {
+    void testBasics(JenkinsConfiguredWithCodeRule j) throws Exception {
         assertThat(
-                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
+                getHeaderAndAssertTheOtherIsAbsent(j, CspHeader.ContentSecurityPolicy),
                 startsWith(
                         "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
 
@@ -93,9 +84,9 @@ public class CustomRuleAdvancedConfigurationTest {
 
     @Test
     @ConfiguredWithCode("Readme.yml")
-    public void testReadme() throws IOException, SAXException {
+    void testReadme(JenkinsConfiguredWithCodeRule j) throws Exception {
         assertThat(
-                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
+                getHeaderAndAssertTheOtherIsAbsent(j, CspHeader.ContentSecurityPolicy),
                 startsWith(
                         "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' avatars.githubusercontent.com data:; object-src 'none'; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
 
@@ -107,136 +98,136 @@ public class CustomRuleAdvancedConfigurationTest {
 
     @Test
     @ConfiguredWithCode("UnsafeInline.yml")
-    public void testUnsafeInline() throws IOException, SAXException {
+    void testUnsafeInline(JenkinsConfiguredWithCodeRule j) throws Exception {
         assertThat(
-                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
+                getHeaderAndAssertTheOtherIsAbsent(j, CspHeader.ContentSecurityPolicy),
                 startsWith(
                         "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self' 'unsafe-inline'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     @Test
     @ConfiguredWithCode("UnsafeEval.yml")
-    public void testUnsafeEval() throws IOException, SAXException {
+    void testUnsafeEval(JenkinsConfiguredWithCodeRule j) throws Exception {
         assertThat(
-                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
+                getHeaderAndAssertTheOtherIsAbsent(j, CspHeader.ContentSecurityPolicy),
                 startsWith(
                         "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self' 'unsafe-eval'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     @Test
     @ConfiguredWithCode("DataScheme.yml")
-    public void testDataScheme() throws IOException, SAXException {
+    void testDataScheme(JenkinsConfiguredWithCodeRule j) throws Exception {
         assertThat(
-                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
+                getHeaderAndAssertTheOtherIsAbsent(j, CspHeader.ContentSecurityPolicy),
                 startsWith(
                         "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self' data:; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     @Test
     @ConfiguredWithCode("BlobScheme.yml")
-    public void testBlobScheme() throws IOException, SAXException {
+    void testBlobScheme(JenkinsConfiguredWithCodeRule j) throws Exception {
         assertThat(
-                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicyReportOnly),
+                getHeaderAndAssertTheOtherIsAbsent(j, CspHeader.ContentSecurityPolicyReportOnly),
                 startsWith(
                         "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self' blob:; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     @Test
     @ConfiguredWithCode("SelfValue.yml")
-    public void testSelfValue() throws IOException, SAXException {
+    void testSelfValue(JenkinsConfiguredWithCodeRule j) throws Exception {
         assertThat(
-                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicyReportOnly),
+                getHeaderAndAssertTheOtherIsAbsent(j, CspHeader.ContentSecurityPolicyReportOnly),
                 startsWith(
                         "base-uri 'none'; connect-src 'self'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     @Test
     @ConfiguredWithCode("ResetInheriting.yml")
-    public void testResetInheriting() throws IOException, SAXException {
+    void testResetInheriting(JenkinsConfiguredWithCodeRule j) throws Exception {
         assertThat(
-                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
+                getHeaderAndAssertTheOtherIsAbsent(j, CspHeader.ContentSecurityPolicy),
                 startsWith(
                         "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     @Test
     @ConfiguredWithCode("MultipleRules.yml")
-    public void testMultipleRules() throws IOException, SAXException {
+    void testMultipleRules(JenkinsConfiguredWithCodeRule j) throws Exception {
         assertThat(
-                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
+                getHeaderAndAssertTheOtherIsAbsent(j, CspHeader.ContentSecurityPolicy),
                 startsWith(
                         "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' blob: cdn.example.com data:; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     @Test
     @ConfiguredWithCode("IterateOneDirective.yml")
-    public void testIterateOneDirective() throws IOException, SAXException {
+    void testIterateOneDirective(JenkinsConfiguredWithCodeRule j) throws Exception {
         assertThat(
-                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
+                getHeaderAndAssertTheOtherIsAbsent(j, CspHeader.ContentSecurityPolicy),
                 startsWith(
                         "base-uri 'none'; connect-src blob:; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     @Test
     @ConfiguredWithCode("NavigationFormActionDomain.yml")
-    public void testNavigationFormActionDomain() throws IOException, SAXException {
+    void testNavigationFormActionDomain(JenkinsConfiguredWithCodeRule j) throws Exception {
         assertThat(
-                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
+                getHeaderAndAssertTheOtherIsAbsent(j, CspHeader.ContentSecurityPolicy),
                 startsWith(
                         "base-uri 'none'; default-src 'self'; form-action 'self' external-form.example.com; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     @Test
     @ConfiguredWithCode("NavigationFrameAncestorsDomain.yml")
-    public void testNavigationFrameAncestorsDomain() throws IOException, SAXException {
+    void testNavigationFrameAncestorsDomain(JenkinsConfiguredWithCodeRule j) throws Exception {
         assertThat(
-                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
+                getHeaderAndAssertTheOtherIsAbsent(j, CspHeader.ContentSecurityPolicy),
                 startsWith(
                         "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self' parent.example.com; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     @Test
     @ConfiguredWithCode("NavigationSelfValueAfterReset.yml")
-    public void testNavigationSelfValueAfterReset() throws IOException, SAXException {
+    void testNavigationSelfValueAfterReset(JenkinsConfiguredWithCodeRule j) throws Exception {
         assertThat(
-                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicyReportOnly),
+                getHeaderAndAssertTheOtherIsAbsent(j, CspHeader.ContentSecurityPolicyReportOnly),
                 startsWith(
                         "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     @Test
     @ConfiguredWithCode("NavigationOtherValueAfterReset.yml")
-    public void testNavigationOtherValueAfterReset() throws IOException, SAXException {
+    void testNavigationOtherValueAfterReset(JenkinsConfiguredWithCodeRule j) throws Exception {
         assertThat(
-                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicyReportOnly),
+                getHeaderAndAssertTheOtherIsAbsent(j, CspHeader.ContentSecurityPolicyReportOnly),
                 startsWith(
                         "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors trusted.example.com; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     @Test
     @ConfiguredWithCode("NavigationMultipleRules.yml")
-    public void testNavigationMultipleRules() throws IOException, SAXException {
+    void testNavigationMultipleRules(JenkinsConfiguredWithCodeRule j) throws Exception {
         assertThat(
-                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
+                getHeaderAndAssertTheOtherIsAbsent(j, CspHeader.ContentSecurityPolicy),
                 startsWith(
                         "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self' trusted1.example.com trusted2.example.com; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     @Test
     @ConfiguredWithCode("NavigationBothDirectives.yml")
-    public void testNavigationBothDirectives() throws IOException, SAXException {
+    void testNavigationBothDirectives(JenkinsConfiguredWithCodeRule j) throws Exception {
         assertThat(
-                getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy),
+                getHeaderAndAssertTheOtherIsAbsent(j, CspHeader.ContentSecurityPolicy),
                 startsWith(
                         "base-uri 'none'; default-src 'self'; form-action 'self' forms.example.com; frame-ancestors 'self' embed.example.com; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-"));
     }
 
     @Test
     @ConfiguredWithCode("InvalidDomain.yml")
-    public void testInvalidDomain() throws IOException, SAXException {
+    void testInvalidDomain(JenkinsConfiguredWithCodeRule j) throws Exception {
         final String cspPrefix =
                 "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-";
-        assertThat(getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy), startsWith(cspPrefix));
+        assertThat(getHeaderAndAssertTheOtherIsAbsent(j, CspHeader.ContentSecurityPolicy), startsWith(cspPrefix));
 
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
         j.jenkins.setAuthorizationStrategy(new MockAuthorizationStrategy()
@@ -244,19 +235,19 @@ public class CustomRuleAdvancedConfigurationTest {
                 .everywhere()
                 .to("admin"));
         // This is an anonymous user:
-        assertThat(getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy), startsWith(cspPrefix));
+        assertThat(getHeaderAndAssertTheOtherIsAbsent(j, CspHeader.ContentSecurityPolicy), startsWith(cspPrefix));
     }
 
     @Test
     @ConfiguredWithCode("ContributorsOrder.yml")
-    public void testContributorsOrder() throws IOException, SAXException {
+    void testContributorsOrder(JenkinsConfiguredWithCodeRule j) throws Exception {
         String cspPrefix =
                 "base-uri 'none'; default-src 'self'; form-action 'self'; frame-ancestors 'self'; img-src cdn.example.com; script-src 'report-sample' 'self'; style-src 'report-sample' 'self' 'unsafe-inline'; report-";
-        ;
-        assertThat(getHeaderAndAssertTheOtherIsAbsent(CspHeader.ContentSecurityPolicy), startsWith(cspPrefix));
+        assertThat(getHeaderAndAssertTheOtherIsAbsent(j, CspHeader.ContentSecurityPolicy), startsWith(cspPrefix));
     }
 
-    private String getHeaderAndAssertTheOtherIsAbsent(CspHeader header) throws IOException, SAXException {
+    private static String getHeaderAndAssertTheOtherIsAbsent(JenkinsConfiguredWithCodeRule j, CspHeader header)
+            throws Exception {
         try (JenkinsRule.WebClient wc = j.createWebClient().withThrowExceptionOnFailingStatusCode(false)) {
             final HtmlPage page = wc.goTo("");
             final WebResponse rsp = page.getWebResponse();

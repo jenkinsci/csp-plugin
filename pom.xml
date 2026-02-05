@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>5.28</version>
+    <version>6.2122.v70b_7b_f659d72</version>
     <relativePath />
   </parent>
 
@@ -36,6 +36,7 @@
     <jenkins.version>2.539</jenkins.version>
     <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
     <spotless.check.skip>false</spotless.check.skip>
+    <ban-junit4-imports.skip>false</ban-junit4-imports.skip>
     <!-- All this plugin does is use/implement Beta API in core, SuppressRestrictedWarnings would be everywhere -->
     <useBeta>true</useBeta>
     <hpi.compatibleSinceVersion>2.0</hpi.compatibleSinceVersion>
@@ -46,7 +47,7 @@
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
         <artifactId>bom-${jenkins.baseline}.x</artifactId>
-        <version>5701.va_b_018a_a_6b_0d3</version>
+        <version>5983.v443959746f1f</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
